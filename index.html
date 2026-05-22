@@ -573,14 +573,14 @@ function generateAlternatives() {
     .map(r=>{ const allYrs=getAvailableYears(); return {f:r.f, total:allYrs.reduce((s,y)=>s+(r[y]||0),0)}; })
     .sort((a,b)=>b.total-a.total).slice(0,8);
   const suggestions = {
-    'energie':    {alt:'Comparer les offres énergie du marché', pct:20, fais:'Facile', prio:'Haute'},
-    'logiciels_abonnements': {alt:'Évaluer alternatives open source', pct:30, fais:'Moyen', prio:'Haute'},
-    'materiel_achats': {alt:'Achat reconditionné / appel d'offres', pct:25, fais:'Facile', prio:'Haute'},
-    'prestations': {alt:'Mise en concurrence des prestataires', pct:15, fais:'Moyen', prio:'Moyenne'},
-    'telecom':    {alt:'Renégociation contrat ou changement opérateur', pct:20, fais:'Facile', prio:'Moyenne'},
-    'transport':  {alt:'Optimisation des déplacements', pct:25, fais:'Facile', prio:'Basse'},
-    'restauration':{alt:'Limitation des dépenses restauration', pct:30, fais:'Facile', prio:'Basse'},
-    'assurance':  {alt:'Comparaison assureurs professionnels', pct:15, fais:'Facile', prio:'Basse'},
+    energie:    {alt:"Comparer les offres energie du marche", pct:20, fais:"Facile", prio:"Haute"},
+    logiciels_abonnements: {alt:"Evaluer alternatives open source", pct:30, fais:"Moyen", prio:"Haute"},
+    materiel_achats: {alt:"Achat reconditionne / appel offres", pct:25, fais:"Facile", prio:"Haute"},
+    prestations: {alt:"Mise en concurrence des prestataires", pct:15, fais:"Moyen", prio:"Moyenne"},
+    telecom:    {alt:"Renegociation contrat operateur", pct:20, fais:"Facile", prio:"Moyenne"},
+    transport:  {alt:"Optimisation des deplacements", pct:25, fais:"Facile", prio:"Basse"},
+    restauration:{alt:"Limitation depenses restauration", pct:30, fais:"Facile", prio:"Basse"},
+    assurance:  {alt:"Comparaison assureurs professionnels", pct:15, fais:"Facile", prio:"Basse"},
   };
   // Trouver la catégorie dominante de chaque fournisseur
   const depsRows = window._rawRows || [];
@@ -817,9 +817,8 @@ function showStatus(msg, isErr=false) {
 
 // ─── RECALCUL DEPUIS depenses_clean_final.csv ────────────────────────
 function recomputeDepenses(rows) {
-  window._rawRows = rows; // Sauvegarde pour alternatives automatiques
-  // Vider alternatives pour forcer régénération
-  ALTERNATIVES.length = 0;
+  window._rawRows = rows;
+  ALTERNATIVES.length = 0; // Reset pour régénération automatique
   const allYrs = [...new Set(rows.map(r=>String(r.annee)).filter(Boolean))].sort();
 
   // KPIs globaux + par année
