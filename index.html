@@ -89,6 +89,9 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 .evo-pos{color:#f87171;font-weight:600}
 .evo-neg{color:#34d399;font-weight:600}
 .evo-zero{color:#555}
+.trow{cursor:default}
+.trow:hover td{background:#252525}
+.trow td{position:relative}
 
 /* --- INFOBANNER --- */
 .info-banner{background:rgba(255,107,0,.1);border-left:4px solid #ff6b00;border-radius:0 8px 8px 0;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#ff9a4d}
@@ -483,7 +486,11 @@ function renderDonut(yr) {
           titleColor:'#888',bodyColor:'#f1f5f9',padding:12,cornerRadius:10,
           callbacks:{
             title:items=>[items[0].label],
-            label:ctx=>`${FMT(ctx.parsed)} — ${Math.round(ctx.parsed/total*100)}% du total`
+            label:ctx=>{
+              const pct=Math.round(ctx.parsed/total*100);
+              const rank=ctx.dataIndex+1;
+              return [`  ${FMT(ctx.parsed)}  ·  ${pct}% du total`,`  Rang #${rank} sur ${cats.length}`];
+            }
           }
         }
       }
@@ -523,8 +530,14 @@ function renderMois(yr) {
           backgroundColor:'#1a1a1a',borderColor:'#333',borderWidth:1,
           titleColor:'#ff9a4d',bodyColor:'#ccc',padding:12,cornerRadius:10,
           callbacks:{
-            label:ctx=>ctx.parsed.y>0?`  ${ctx.dataset.label}: ${FMT(ctx.parsed.y)}`:null,
-            footer:items=>`Total : ${FMT(items.reduce((s,i)=>s+i.parsed.y,0))}`
+            title:items=>[`${items[0].label}`],
+            label:ctx=>ctx.parsed.y>0?`  ${ctx.dataset.label} : ${FMT(ctx.parsed.y)}`:null,
+            footer:items=>{
+              const tot=items.reduce((s,i)=>s+i.parsed.y,0);
+              const cats2=items.filter(i=>i.parsed.y>0).sort((a,b)=>b.parsed.y-a.parsed.y);
+              const top=cats2[0];
+              return [`Total ce mois : ${FMT(tot)}`, top?`Dominante : ${top.dataset.label} (${Math.round(top.parsed.y/tot*100)}%)`:''];
+            }
           }
         }
       }
@@ -589,7 +602,14 @@ function renderFournChart(yr) {
         tooltip:{
           backgroundColor:'#1a1a1a',borderColor:'#333',borderWidth:1,
           titleColor:'#ff9a4d',bodyColor:'#f1f5f9',padding:12,cornerRadius:10,
-          callbacks:{label:ctx=>`  ${ctx.dataset.label}: ${FMT(ctx.parsed.x)}`}
+          callbacks:{
+          title:items=>[items[0].label],
+          label:ctx=>`  ${ctx.dataset.label} : ${FMT(ctx.parsed.x)}`,
+          footer:items=>{
+            const tot=items.reduce((s,i)=>s+(i.parsed.x||0),0);
+            return tot>0?`Total cumulé : ${FMT(tot)}`:'';
+          }
+        }
         }
       }
     }
@@ -598,13 +618,36 @@ function renderFournChart(yr) {
 
 function renderFournEvoTable() {
   const tbody = document.getElementById('tbodyFournEvo');
+  const th=document.querySelector('#tableFournEvo thead tr');
+  const yrs=th?[...th.querySelectorAll('th')].slice(1,3).map(t=>t.textContent):['2023','2025'];
   tbody.innerHTML = FOURN_EVO.map(r=>{
-    let evoBadge;
-    if(r.evo===null) evoBadge='<span class="badge b-nouveau">Nouveau</span>';
-    else if(r.evo>0) evoBadge=`<span class="evo-pos">+${r.evo}%</span>`;
-    else if(r.evo<0) evoBadge=`<span class="evo-neg">${r.evo}%</span>`;
-    else evoBadge=`<span class="evo-zero">=</span>`;
-    return `<tr><td><strong>${r.f}</strong></td><td>${r.m23>0?FMT(r.m23):'—'}</td><td>${r.m25>0?FMT(r.m25):'—'}</td><td>${evoBadge}</td></tr>`;
+    let evoBadge,context;
+    if(r.evo===null){
+      evoBadge='<span class="badge b-nouveau">Nouveau</span>';
+      context=`Fournisseur absent en ${yrs[0]}, apparu en ${yrs[1]}`;
+    } else if(r.evo<=-100){
+      evoBadge=`<span class="evo-neg">${r.evo}%</span>`;
+      context=`Fournisseur abandonné : plus de dépenses en ${yrs[1]}`;
+    } else if(r.evo>50){
+      evoBadge=`<span class="evo-pos">+${r.evo}%</span>`;
+      context=`Forte hausse : +${FMT(r.m25-r.m23)} de dépenses supplémentaires`;
+    } else if(r.evo>0){
+      evoBadge=`<span class="evo-pos">+${r.evo}%</span>`;
+      context=`En légère hausse : +${FMT(r.m25-r.m23)}`;
+    } else if(r.evo<-50){
+      evoBadge=`<span class="evo-neg">${r.evo}%</span>`;
+      context=`Forte réduction : ${FMT(r.m23-r.m25)} économisés`;
+    } else {
+      evoBadge=`<span class="evo-neg">${r.evo}%</span>`;
+      context=`En légère baisse : ${FMT(r.m23-r.m25)} économisés`;
+    }
+    const totalPart=r.m23>0&&r.m25>0?`Cumulé 2 années : ${FMT(r.m23+r.m25)}`:'';
+    return `<tr class="trow" title="${r.f} — ${context}${totalPart?' | '+totalPart:''}">
+      <td><strong>${r.f}</strong></td>
+      <td>${r.m23>0?FMT(r.m23):'—'}</td>
+      <td>${r.m25>0?FMT(r.m25):'—'}</td>
+      <td>${evoBadge}</td>
+    </tr>`;
   }).join('');
 }
 
@@ -661,13 +704,14 @@ function renderAltTable() {
   document.getElementById('tbodyAlt').innerHTML = alts.map(r=>{
     const bc = r.prio.toLowerCase();
     const fc = r.fais.toLowerCase();
-    return `<tr>
+    const saving=r.eco>0?`Économie de ${FMT(r.eco)}/an`:'Pas d économie directe';
+    return `<tr class="trow" title="${r.f} → ${r.alt} | ${saving} | Faisabilité : ${r.fais} | Priorité : ${r.prio}">
       <td><strong>${r.f}</strong></td>
       <td>${r.cat}</td>
       <td style="font-weight:600">${FMT(r.act)}</td>
       <td>${r.alt}</td>
       <td>${r.altc>0?FMT(r.altc):'Gratuit'}</td>
-      <td style="color:#16a34a;font-weight:600">${r.eco>0?FMT(r.eco):'—'}</td>
+      <td style="color:#34d399;font-weight:600">${r.eco>0?FMT(r.eco):'—'}</td>
       <td><strong>${r.pct}%</strong></td>
       <td><span class="badge b-${fc}">${r.fais}</span></td>
       <td><span class="badge b-${bc}">${r.prio}</span></td>
@@ -697,7 +741,19 @@ function renderAltChart() {
       },
       plugins:{
         legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>`Économie: ${FMT(ctx.parsed.x)}`}}
+        tooltip:{backgroundColor:'#1a1a1a',borderColor:'#444',borderWidth:1,titleColor:'#ff9a4d',bodyColor:'#f1f5f9',footerColor:'#666',padding:12,cornerRadius:10,displayColors:true,callbacks:{
+          title:items=>[items[0].label],
+          label:ctx=>{
+            const alts=generateAlternatives().filter(r=>r.eco>0);
+            const a=alts[ctx.dataIndex];
+            return a?[`  Économie estimée : ${FMT(ctx.parsed.x)}`,`  Réduction : ${a.pct}% du coût actuel`]:[`  ${FMT(ctx.parsed.x)}`];
+          },
+          footer:items=>{
+            const alts=generateAlternatives().filter(r=>r.eco>0);
+            const a=alts[items[0].dataIndex];
+            return a?[`Priorité : ${a.prio}  ·  Faisabilité : ${a.fais}`,`Coût actuel : ${FMT(a.act)}  →  Alternatif : ${a.altc>0?FMT(a.altc):'Gratuit'}`]:[];
+          }
+        }}
       }
     }
   });
@@ -780,7 +836,23 @@ function renderProjections() {
       },
       plugins:{
         legend:{display:false},
-        tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>`${ctx.dataset.label}: ${FMT(ctx.parsed.y)}`}}
+        tooltip:{backgroundColor:'#1a1a1a',borderColor:'#444',borderWidth:1,titleColor:'#ff9a4d',bodyColor:'#f1f5f9',footerColor:'#666',padding:12,cornerRadius:10,displayColors:true,mode:'index',intersect:false,callbacks:{
+          title:items=>[`${items[0].label}`],
+          label:ctx=>`  ${ctx.dataset.label} : ${FMT(ctx.parsed.y)}`,
+          footer:items=>{
+            const caDs=items[0].chart.data.datasets.find(d=>d.label==='CA');
+            const resDs=items[0].chart.data.datasets.find(d=>d.label==='Résultat net');
+            if(caDs&&resDs){
+              const i=items[0].dataIndex;
+              const ca=caDs.data[i],res=resDs.data[i];
+              if(ca>0){
+                const renta=Math.round(res/ca*1000)/10;
+                return `Taux de rentabilité : ${renta}%`;
+              }
+            }
+            return '';
+          }
+        }}
       }
     }
   });
@@ -807,7 +879,20 @@ function renderProjections() {
       },
       plugins:{
         legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>`Rentabilité: ${ctx.parsed.y}%`}}
+        tooltip:{backgroundColor:'#1a1a1a',borderColor:'#444',borderWidth:1,titleColor:'#ff9a4d',bodyColor:'#f1f5f9',footerColor:'#666',padding:12,cornerRadius:10,displayColors:true,callbacks:{
+          title:items=>[`${items[0].label}`],
+          label:ctx=>`  Rentabilité : ${ctx.parsed.y}%`,
+          footer:items=>{
+            const idx=items[0].dataIndex;
+            const data=items[0].chart.data.datasets[0].data;
+            if(idx>0&&data[idx-1]!=null){
+              const diff=Math.round((data[idx]-data[idx-1])*10)/10;
+              const sign=diff>=0?'+':'';
+              return `Évolution : ${sign}${diff} pts vs période précédente`;
+            }
+            return `Première année de référence`;
+          }
+        }}
       }
     }
   });
