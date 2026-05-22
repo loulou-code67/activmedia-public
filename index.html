@@ -109,7 +109,18 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 <!-- ========== HEADER ========== -->
 <div class="header">
   <div class="header-brand">
-    <div class="header-logo">AM</div>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 50" style="height:36px;width:auto">
+  <!-- Cercles concentriques gauche -->
+  <circle cx="25" cy="25" r="22" fill="none" stroke="#1a3a7c" stroke-width="3.5"/>
+  <circle cx="25" cy="25" r="15" fill="none" stroke="#f5a800" stroke-width="3.5"/>
+  <circle cx="25" cy="25" r="8" fill="none" stroke="#1a3a7c" stroke-width="3.5"/>
+  <!-- Arc supérieur orange -->
+  <path d="M 8 18 Q 25 2 42 18" fill="none" stroke="#f5a800" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Texte ACTIVMEDIA -->
+  <text x="52" y="22" font-family="Arial,sans-serif" font-weight="900" font-size="14" fill="#1a3a7c" letter-spacing="0.5">ACTIVMEDIA</text>
+  <!-- Texte The digital School -->
+  <text x="52" y="36" font-family="Arial,sans-serif" font-size="8.5" fill="#f5a800" letter-spacing="0.3">The digital School</text>
+</svg>
     <div>
       <div class="header h1" style="color:#fff;font-size:17px;font-weight:600">ActivMedia</div>
       <div class="header-sub">Dashboard Analyse des Dépenses</div>
@@ -141,13 +152,18 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 </div>
 
 <!-- WELCOME OVERLAY -->
-<div id="welcomeOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+<div id="welcomeOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
   <div style="background:#1f1f1f;border:0.5px solid #333;border-radius:16px;padding:40px 48px;max-width:500px;width:90%;text-align:center">
-    <div style="width:56px;height:56px;background:#ff6b00;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 20px">AM</div>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="height:80px;width:80px;margin:0 auto 20px;display:block">
+  <circle cx="50" cy="50" r="45" fill="none" stroke="#1a3a7c" stroke-width="6"/>
+  <circle cx="50" cy="50" r="30" fill="none" stroke="#f5a800" stroke-width="6"/>
+  <circle cx="50" cy="50" r="15" fill="none" stroke="#1a3a7c" stroke-width="6"/>
+  <path d="M 12 38 Q 50 5 88 38" fill="none" stroke="#f5a800" stroke-width="6" stroke-linecap="round"/>
+</svg>
     <div style="font-size:22px;font-weight:700;color:#f1f5f9;margin-bottom:8px">ActivMedia Dashboard</div>
     <div style="font-size:14px;color:#666;margin-bottom:28px;line-height:1.6">Importez votre fichier <code style="background:#2a2a2a;padding:2px 8px;border-radius:4px;color:#ff9a4d">depenses_clean_final.csv</code> pour visualiser vos dépenses, ou utilisez les données de démonstration.</div>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-      <button onclick="document.getElementById('csvInput').click()" style="background:#ff6b00;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">↑ Importer mon CSV</button>
+      <button onclick="triggerImportFromOverlay()" style="background:#ff6b00;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">↑ Importer mon CSV</button>
       <button onclick="closeWelcome()" style="background:#2a2a2a;color:#aaa;border:0.5px solid #333;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer">Voir la démo</button>
     </div>
     <div style="font-size:11px;color:#444;margin-top:16px">Les données sont traitées localement — rien n'est envoyé sur internet</div>
@@ -1158,6 +1174,16 @@ function clearStorage() {
   try { localStorage.removeItem(LS_KEY); } catch(e) {}
 }
 
+function triggerImportFromOverlay() {
+  // Crée un input temporaire pour l'import depuis l'overlay
+  const input = document.getElementById('csvInput');
+  input.onchange = function() {
+    handleCSV(this);
+    this.onchange = null;
+  };
+  input.click();
+}
+
 function resetData() {
   if(!confirm('Effacer toutes les données importées et revenir à la démo ?')) return;
   clearStorage();
@@ -1174,11 +1200,13 @@ function resetData() {
 }
 
 function closeWelcome() {
-  document.getElementById('welcomeOverlay').style.display = 'none';
+  const el = document.getElementById('welcomeOverlay');
+  if(el) el.style.display = 'none';
 }
 
 function showWelcome() {
-  document.getElementById('welcomeOverlay').style.display = 'flex';
+  const el = document.getElementById('welcomeOverlay');
+  el.style.display = 'flex';
 }
 
 window.addEventListener('load', () => {
