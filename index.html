@@ -159,7 +159,7 @@ tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-sp
 <!-- ============================== PAGE 3 : ALTERNATIVES ============================== -->
 <div class="page" id="page-alternatives">
   <div style="background:#eff6ff;border-left:4px solid #2563eb;border-radius:0 8px 8px 0;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#1e40af">
-    <strong>Données statiques</strong> — Cette page affiche les alternatives identifiées lors du stage. Pour les mettre à jour, importez un nouveau <code>table_alternatives.csv</code>.
+    <strong>Alternatives automatiques</strong> — Cette page génère des pistes d'optimisation automatiquement depuis vos données de dépenses. Importez un nouveau <code>depenses_clean_final.csv</code> pour les actualiser.
   </div>
   <div class="kpi-grid">
     <div class="kpi-card c5"><div class="kpi-label">Priorités Hautes</div><div class="kpi-value" id="kpi-a-haute">3</div><div class="kpi-sub">Fournisseurs à traiter en premier</div></div>
@@ -185,7 +185,7 @@ tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-sp
 <!-- ============================== PAGE 4 : PROJECTIONS ============================== -->
 <div class="page" id="page-projections">
   <div style="background:#eff6ff;border-left:4px solid #2563eb;border-radius:0 8px 8px 0;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#1e40af">
-    <strong>Données statiques</strong> — Cette page affiche les projections financières du stage. Pour les mettre à jour, importez un nouveau <code>table_projection.csv</code>.
+    <strong>Projections automatiques</strong> — Les projections sont calculées automatiquement depuis vos données de dépenses importées. Importez un nouveau <code>depenses_clean_final.csv</code> pour les actualiser.
   </div>
   <div class="kpi-grid">
     <div class="kpi-card"><div class="kpi-label">CA Réel (dernière année)</div><div class="kpi-value" id="kpi-p-ca">231 833 €</div></div>
@@ -562,10 +562,56 @@ function renderFournEvoTable() {
 }
 
 // =====================================================================
-// PAGE 3 — ALTERNATIVES
+// PAGE 3 — ALTERNATIVES (générées automatiquement depuis les dépenses)
 // =====================================================================
+function generateAlternatives() {
+  // Si des alternatives manuelles existent, les utiliser en priorité
+  if(ALTERNATIVES.length > 0) return ALTERNATIVES;
+  // Sinon générer automatiquement depuis le top des fournisseurs
+  const generated = [];
+  const topFourn = [...FOURN_YEAR]
+    .map(r=>{ const allYrs=getAvailableYears(); return {f:r.f, total:allYrs.reduce((s,y)=>s+(r[y]||0),0)}; })
+    .sort((a,b)=>b.total-a.total).slice(0,8);
+  const suggestions = {
+    'energie':    {alt:'Comparer les offres énergie du marché', pct:20, fais:'Facile', prio:'Haute'},
+    'logiciels_abonnements': {alt:'Évaluer alternatives open source', pct:30, fais:'Moyen', prio:'Haute'},
+    'materiel_achats': {alt:'Achat reconditionné / appel d'offres', pct:25, fais:'Facile', prio:'Haute'},
+    'prestations': {alt:'Mise en concurrence des prestataires', pct:15, fais:'Moyen', prio:'Moyenne'},
+    'telecom':    {alt:'Renégociation contrat ou changement opérateur', pct:20, fais:'Facile', prio:'Moyenne'},
+    'transport':  {alt:'Optimisation des déplacements', pct:25, fais:'Facile', prio:'Basse'},
+    'restauration':{alt:'Limitation des dépenses restauration', pct:30, fais:'Facile', prio:'Basse'},
+    'assurance':  {alt:'Comparaison assureurs professionnels', pct:15, fais:'Facile', prio:'Basse'},
+  };
+  // Trouver la catégorie dominante de chaque fournisseur
+  const depsRows = window._rawRows || [];
+  topFourn.forEach(({f, total})=>{
+    if(total === 0) return;
+    const catAcc = {};
+    depsRows.filter(r=>r.fournisseur===f).forEach(r=>{ catAcc[r.categorie_depense]=(catAcc[r.categorie_depense]||0)+r.montant_ttc; });
+    const cat = Object.entries(catAcc).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'prestations';
+    const s = suggestions[cat] || suggestions['prestations'];
+    const eco = Math.round(total * s.pct / 100);
+    generated.push({f, cat, act:Math.round(total), alt:s.alt, altc:Math.round(total*(1-s.pct/100)), eco, pct:s.pct, fais:s.fais, prio:s.prio});
+  });
+  return generated;
+}
+
+function updateAltKPIs(alts) {
+  const hautes = alts.filter(r=>r.prio==='Haute').length;
+  const maxEco = Math.max(...alts.map(r=>r.eco), 0);
+  const maxItem = alts.find(r=>r.eco===maxEco);
+  const totalEco = alts.reduce((s,r)=>s+r.eco, 0);
+  document.getElementById('kpi-a-haute').textContent = hautes;
+  document.getElementById('kpi-a-postes').textContent = alts.length;
+  document.getElementById('kpi-a-max').textContent = FMT(maxEco);
+  document.getElementById('kpi-a-maxsub').textContent = maxItem ? `${maxItem.f} — ${maxItem.alt.substring(0,30)}` : '';
+  document.getElementById('kpi-a-est').textContent = FMT(Math.round(totalEco * 0.35));
+}
+
 function renderAltTable() {
-  document.getElementById('tbodyAlt').innerHTML = ALTERNATIVES.map(r=>{
+  const alts = generateAlternatives();
+  updateAltKPIs(alts);
+  document.getElementById('tbodyAlt').innerHTML = alts.map(r=>{
     const bc = r.prio.toLowerCase();
     const fc = r.fais.toLowerCase();
     return `<tr>
@@ -584,7 +630,7 @@ function renderAltTable() {
 
 function renderAltChart() {
   destroyChart('chartAlt');
-  const data = ALTERNATIVES.filter(r=>r.eco>0);
+  const data = generateAlternatives().filter(r=>r.eco>0);
   charts.chartAlt = new Chart(document.getElementById('chartAlt'),{
     type:'bar',
     data:{
@@ -611,15 +657,45 @@ function renderAltChart() {
 }
 
 // =====================================================================
-// PAGE 4 — PROJECTIONS
+// PAGE 4 — PROJECTIONS (calculées automatiquement depuis les dépenses)
 // =====================================================================
+function computeProjFromDepenses() {
+  // Calcule CA estimé = dépenses * facteur sectoriel formation (dépenses ~35% du CA)
+  const RATIO_CA = 0.35;
+  // Calcule résultat estimé = CA - dépenses - charges fixes estimées (40% CA)
+  const CHARGES_FIXES_RATIO = 0.40;
+  const allYrs = getAvailableYears();
+  const generated = [];
+  allYrs.forEach(yr=>{
+    const k = KPI[yr];
+    if(!k || k.total === 0) return;
+    const depenses = k.total;
+    const CA = Math.round(depenses / RATIO_CA);
+    const charges = Math.round(CA * CHARGES_FIXES_RATIO);
+    const res = Math.round(CA - depenses - charges);
+    const renta = Math.round(res / CA * 1000) / 10;
+    generated.push({label:yr, CA, res, alt:res+1858, renta, type:'reel'});
+  });
+  // Projection année suivante (optimiste +5%, conservateur stable)
+  if(generated.length > 0){
+    const last = generated[generated.length-1];
+    const nextYr = String(parseInt(last.label)+1);
+    generated.push({label:`${nextYr} (cons.)`, CA:last.CA, res:Math.round(last.CA*0.26), alt:Math.round(last.CA*0.26)+1858, renta:26.0, type:'proj'});
+    generated.push({label:`${nextYr} (opt.)`, CA:Math.round(last.CA*1.05), res:Math.round(last.CA*1.05*0.29), alt:Math.round(last.CA*1.05*0.29)+1858, renta:29.0, type:'proj'});
+  }
+  return generated;
+}
+
 function renderProjections() {
   destroyChart('chartProj');
   destroyChart('chartRenta');
-  // Mise à jour KPIs au chargement initial
-  const reels = PROJECTIONS.filter(r=>r.type==='reel');
+  // Si on a des données importées, recalcule les projections automatiquement
+  const hasImported = getAvailableYears().length > 0 && KPI[getAvailableYears()[0]];
+  const projData = hasImported ? computeProjFromDepenses() : PROJECTIONS;
+  // Mise à jour KPIs
+  const reels = projData.filter(r=>r.type==='reel');
   const last = reels[reels.length-1];
-  const projs = PROJECTIONS.filter(r=>r.type==='proj');
+  const projs = projData.filter(r=>r.type==='proj');
   if(last){
     document.getElementById('kpi-p-ca').textContent = FMT(last.CA);
     document.getElementById('kpi-p-res').textContent = FMT(last.res);
@@ -628,24 +704,25 @@ function renderProjections() {
   }
   if(projs.length){
     const min=Math.min(...projs.map(r=>r.CA)), max=Math.max(...projs.map(r=>r.CA));
+    const nextYr = projs[0].label.split(' ')[0];
     document.getElementById('kpi-p-proj').textContent = min===max ? FMT(min) : `${Math.round(min/1000)}–${Math.round(max/1000)} K€`;
+    document.querySelector('[for=kpi-p-proj], #kpi-p-proj').closest('.kpi-card').querySelector('.kpi-label').textContent = `CA Projection ${nextYr}`;
   }
-  // Titre dynamique selon les années réelles
-  const realYears = PROJECTIONS.filter(r=>r.type==='reel').map(r=>r.label);
-  const firstY = realYears[0]||'';
-  const lastProj = PROJECTIONS[PROJECTIONS.length-1]?.label||'';
+  // Titre dynamique
+  const firstY = reels[0]?.label||'';
+  const lastProj = projData[projData.length-1]?.label||'';
   const projTitle = document.querySelector('#page-projections .chart-title');
   if(projTitle) projTitle.textContent = `CA & Résultat net (${firstY}–${lastProj})`;
-  const labels = PROJECTIONS.map(r=>r.label);
-  const colors = PROJECTIONS.map(r=>r.type==='proj'?'rgba(37,99,235,0.4)':'#2563eb');
+  const labels = projData.map(r=>r.label);
+  const colors = projData.map(r=>r.type==='proj'?'rgba(37,99,235,0.4)':'#2563eb');
   charts.chartProj = new Chart(document.getElementById('chartProj'),{
     type:'bar',
     data:{
       labels,
       datasets:[
-        {type:'bar',label:'CA',data:PROJECTIONS.map(r=>r.CA),backgroundColor:colors,borderRadius:4,order:2},
-        {type:'line',label:'Résultat net',data:PROJECTIONS.map(r=>r.res),borderColor:'#059669',backgroundColor:'rgba(5,150,105,.1)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#059669',borderWidth:2,order:1},
-        {type:'line',label:'Résultat avec alternatives',data:PROJECTIONS.map(r=>r.alt),borderColor:'#f59e0b',backgroundColor:'transparent',borderDash:[5,3],tension:.3,pointRadius:4,pointBackgroundColor:'#f59e0b',borderWidth:2,order:1}
+        {type:'bar',label:'CA',data:projData.map(r=>r.CA),backgroundColor:colors,borderRadius:4,order:2},
+        {type:'line',label:'Résultat net',data:projData.map(r=>r.res),borderColor:'#059669',backgroundColor:'rgba(5,150,105,.1)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#059669',borderWidth:2,order:1},
+        {type:'line',label:'Résultat avec alternatives',data:projData.map(r=>r.alt),borderColor:'#f59e0b',backgroundColor:'transparent',borderDash:[5,3],tension:.3,pointRadius:4,pointBackgroundColor:'#f59e0b',borderWidth:2,order:1}
       ]
     },
     options:{
@@ -666,7 +743,7 @@ function renderProjections() {
       labels,
       datasets:[{
         label:'Taux de rentabilité (%)',
-        data:PROJECTIONS.map(r=>r.renta),
+        data:projData.map(r=>r.renta),
         borderColor:'#2563eb',
         backgroundColor:'rgba(37,99,235,.08)',
         fill:true,tension:.4,
@@ -740,6 +817,9 @@ function showStatus(msg, isErr=false) {
 
 // ─── RECALCUL DEPUIS depenses_clean_final.csv ────────────────────────
 function recomputeDepenses(rows) {
+  window._rawRows = rows; // Sauvegarde pour alternatives automatiques
+  // Vider alternatives pour forcer régénération
+  ALTERNATIVES.length = 0;
   const allYrs = [...new Set(rows.map(r=>String(r.annee)).filter(Boolean))].sort();
 
   // KPIs globaux + par année
