@@ -35,12 +35,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .filter-btn.active{background:#ff6b00;color:#fff;border-color:#ff6b00}
 
 /* --- MAIN --- */
-.main{padding:20px 24px;max-width:1400px}
-.page{display:none}
-.page.active{display:block}
+.main{padding:20px 24px;max-width:1400px;overflow:visible}
+.page{display:none;overflow:visible}
+.page.active{display:block;overflow:visible}
 
 /* --- KPI CARDS --- */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;overflow:visible;padding-top:4px}
 .kpi-card{background:#1f1f1f;border-radius:10px;padding:18px 20px;border:0.5px solid #2a2a2a;border-top:4px solid #ff6b00;position:relative;cursor:pointer;transition:.15s}
 .kpi-card:hover{border-color:#ff6b00;background:#252525}
 .kpi-card.c2{border-top-color:#f59e0b}
@@ -52,12 +52,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .kpi-sub{font-size:11px;color:#444;margin-top:3px}
 
 /* --- TOOLTIP STYLE 2 (carte détaillée) --- */
-.kpi-tt{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#1a1a1a;border:0.5px solid #333;border-radius:10px;padding:11px 15px;min-width:160px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;white-space:nowrap}
+.kpi-tt{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#1a1a1a;border:0.5px solid #444;border-radius:10px;padding:12px 16px;min-width:170px;pointer-events:none;opacity:0;transition:opacity .18s;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.6)}
 .kpi-card:hover .kpi-tt{opacity:1}
 .kpi-tt-title{font-size:11px;color:#666;margin-bottom:5px}
 .kpi-tt-val{font-size:18px;font-weight:600;color:#f1f5f9}
-.kpi-tt-sub{font-size:11px;color:#555;margin-top:3px}
-.kpi-tt::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#333}
+.kpi-tt-sub{font-size:11px;color:#666;margin-top:5px;padding-top:5px;border-top:0.5px solid #2a2a2a}
+.kpi-tt::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#444}
 
 /* --- CHARTS --- */
 .charts-2col{display:grid;grid-template-columns:5fr 8fr;gap:16px;margin-bottom:16px}
@@ -164,10 +164,10 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 <!-- ============================== PAGE 2 : FOURNISSEURS ============================== -->
 <div class="page" id="page-fournisseurs">
   <div class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-label">Total Dépenses</div><div class="kpi-value" id="kpi-f-total">99 421 €</div></div>
-    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-f-fourn">71</div></div>
-    <div class="kpi-card c3"><div class="kpi-label">Fournisseur Principal</div><div class="kpi-value" id="kpi-f-main" style="font-size:18px">LAB</div></div>
-    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen / Fournisseur</div><div class="kpi-value" id="kpi-f-moy">1 400 €</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Dépenses</div><div class="kpi-value" id="kpi-f-total">99 421 €</div><div class="kpi-tt"><div class="kpi-tt-title">Total dépenses fournisseurs</div><div class="kpi-tt-val" id="tt-f-total">99 421 €</div><div class="kpi-tt-sub">Toutes années confondues</div></div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-f-fourn">71</div><div class="kpi-tt"><div class="kpi-tt-title">Fournisseurs uniques</div><div class="kpi-tt-val" id="tt-f-fourn">71</div><div class="kpi-tt-sub">Actifs sur la période</div></div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Fournisseur Principal</div><div class="kpi-value" id="kpi-f-main" style="font-size:18px">LAB</div><div class="kpi-tt"><div class="kpi-tt-title">Fournisseur le plus dépensé</div><div class="kpi-tt-val" id="tt-f-main" style="font-size:15px">LAB</div><div class="kpi-tt-sub">Montant total cumulé</div></div></div>
+    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen / Fournisseur</div><div class="kpi-value" id="kpi-f-moy">1 400 €</div><div class="kpi-tt"><div class="kpi-tt-title">Dépense moyenne par fournisseur</div><div class="kpi-tt-val" id="tt-f-moy">1 400 €</div><div class="kpi-tt-sub">Total ÷ nb fournisseurs</div></div></div>
   </div>
   <div class="chart-card" style="margin-bottom:16px">
     <div class="chart-title">Top 10 fournisseurs par année (€)</div>
