@@ -158,6 +158,9 @@ tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-sp
 
 <!-- ============================== PAGE 3 : ALTERNATIVES ============================== -->
 <div class="page" id="page-alternatives">
+  <div style="background:#eff6ff;border-left:4px solid #2563eb;border-radius:0 8px 8px 0;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#1e40af">
+    <strong>Données statiques</strong> — Cette page affiche les alternatives identifiées lors du stage. Pour les mettre à jour, importez un nouveau <code>table_alternatives.csv</code>.
+  </div>
   <div class="kpi-grid">
     <div class="kpi-card c5"><div class="kpi-label">Priorités Hautes</div><div class="kpi-value" id="kpi-a-haute">3</div><div class="kpi-sub">Fournisseurs à traiter en premier</div></div>
     <div class="kpi-card c2"><div class="kpi-label">Postes à Optimiser</div><div class="kpi-value" id="kpi-a-postes">10</div><div class="kpi-sub">Alternatives identifiées</div></div>
@@ -181,6 +184,9 @@ tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-sp
 
 <!-- ============================== PAGE 4 : PROJECTIONS ============================== -->
 <div class="page" id="page-projections">
+  <div style="background:#eff6ff;border-left:4px solid #2563eb;border-radius:0 8px 8px 0;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#1e40af">
+    <strong>Données statiques</strong> — Cette page affiche les projections financières du stage. Pour les mettre à jour, importez un nouveau <code>table_projection.csv</code>.
+  </div>
   <div class="kpi-grid">
     <div class="kpi-card"><div class="kpi-label">CA Réel (dernière année)</div><div class="kpi-value" id="kpi-p-ca">231 833 €</div></div>
     <div class="kpi-card c2"><div class="kpi-label">Résultat Net Réel</div><div class="kpi-value" id="kpi-p-res">60 865 €</div></div>
@@ -347,6 +353,13 @@ function switchTab(tab, el) {
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+tab).classList.add('active');
   el.classList.add('active');
+  // Masquer le filtre année sur Alternatives et Projections (données statiques)
+  const filterBar = document.querySelector('.filter-bar');
+  if(tab === 'alternatives' || tab === 'projections') {
+    filterBar.style.display = 'none';
+  } else {
+    filterBar.style.display = 'flex';
+  }
   setTimeout(()=>renderAll(), 50);
 }
 
@@ -617,6 +630,12 @@ function renderProjections() {
     const min=Math.min(...projs.map(r=>r.CA)), max=Math.max(...projs.map(r=>r.CA));
     document.getElementById('kpi-p-proj').textContent = min===max ? FMT(min) : `${Math.round(min/1000)}–${Math.round(max/1000)} K€`;
   }
+  // Titre dynamique selon les années réelles
+  const realYears = PROJECTIONS.filter(r=>r.type==='reel').map(r=>r.label);
+  const firstY = realYears[0]||'';
+  const lastProj = PROJECTIONS[PROJECTIONS.length-1]?.label||'';
+  const projTitle = document.querySelector('#page-projections .chart-title');
+  if(projTitle) projTitle.textContent = `CA & Résultat net (${firstY}–${lastProj})`;
   const labels = PROJECTIONS.map(r=>r.label);
   const colors = PROJECTIONS.map(r=>r.type==='proj'?'rgba(37,99,235,0.4)':'#2563eb');
   charts.chartProj = new Chart(document.getElementById('chartProj'),{
