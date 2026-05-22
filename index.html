@@ -109,17 +109,13 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 <!-- ========== HEADER ========== -->
 <div class="header">
   <div class="header-brand">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 50" style="height:36px;width:auto">
-  <!-- Cercles concentriques gauche -->
-  <circle cx="25" cy="25" r="22" fill="none" stroke="#1a3a7c" stroke-width="3.5"/>
-  <circle cx="25" cy="25" r="15" fill="none" stroke="#f5a800" stroke-width="3.5"/>
-  <circle cx="25" cy="25" r="8" fill="none" stroke="#1a3a7c" stroke-width="3.5"/>
-  <!-- Arc superieur orange -->
-  <path d="M 8 18 Q 25 2 42 18" fill="none" stroke="#f5a800" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- Texte ACTIVMEDIA -->
-  <text x="52" y="22" font-family="Arial,sans-serif" font-weight="900" font-size="14" fill="#1a3a7c" letter-spacing="0.5">ACTIVMEDIA</text>
-  <!-- Texte The digital School -->
-  <text x="52" y="36" font-family="Arial,sans-serif" font-size="8.5" fill="#f5a800" letter-spacing="0.3">The digital School</text>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 44" style="height:44px;width:auto;min-width:150px">
+  <circle cx="22" cy="22" r="19" fill="none" stroke="#1a3a7c" stroke-width="3"/>
+  <circle cx="22" cy="22" r="12.5" fill="none" stroke="#f5a800" stroke-width="3"/>
+  <circle cx="22" cy="22" r="6" fill="none" stroke="#1a3a7c" stroke-width="3"/>
+  <path d="M 5 17 Q 22 3 39 17" fill="none" stroke="#f5a800" stroke-width="3" stroke-linecap="round"/>
+  <text x="47" y="20" font-family="Arial,sans-serif" font-weight="900" font-size="13" fill="#fff" letter-spacing="0.5">ACTIVMEDIA</text>
+  <text x="47" y="34" font-family="Arial,sans-serif" font-size="8" fill="#f5a800" letter-spacing="0.3">The digital School</text>
 </svg>
     <div>
       <div class="header h1" style="color:#fff;font-size:17px;font-weight:600">ActivMedia</div>
@@ -518,7 +514,7 @@ function renderDonut(yr) {
             label:function(ctx){
               var pct=Math.round(ctx.parsed/total*100);
               var rank=ctx.dataIndex+1;
-              return ['  '+FMT(ctx.parsed)+'  ?  '+pct+'% du total','  Rang #'+rank+' sur '+cats.length];
+              return ['  '+FMT(ctx.parsed)+'  -  '+pct+'% du total','  Rang #'+rank+' sur '+cats.length];
             }
           }
         }
@@ -550,7 +546,7 @@ function renderMois(yr) {
       responsive:true,maintainAspectRatio:false,
       scales:{
         x:{stacked:true,ticks:{maxRotation:45,font:{size:10}},grid:{display:false,color:'#222'}},
-        y:{stacked:true,ticks:{callback:v=>v>=1000?`${v/1000}k?`:`${v}?`,font:{size:10},color:'#666'},grid:{color:'#222'}}
+        y:{stacked:true,ticks:{callback:function(v){return v>=1000?Math.round(v/1000)+'k':v;},font:{size:10},color:'#666'},grid:{color:'#222'}}
       },
       plugins:{
         legend:{display:false},
@@ -623,7 +619,7 @@ function renderFournChart(yr) {
       indexAxis:'y',
       responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{ticks:{callback:v=>`${Math.round(v/1000)}k?`,font:{size:10},color:'#666'},grid:{color:'#222'}},
+        x:{ticks:{callback:function(v){return Math.round(v/1000)+'k';},font:{size:10},color:'#666'},grid:{color:'#222'}},
         y:{ticks:{font:{size:11}},grid:{display:false,color:'#222'}}
       },
       plugins:{
@@ -774,7 +770,7 @@ function renderAltChart() {
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{ticks:{callback:v=>`${v}?`,font:{size:10},color:'#666'},grid:{color:'#222'}},
+        x:{ticks:{callback:function(v){return v;},font:{size:10},color:'#666'},grid:{color:'#222'}},
         y:{ticks:{font:{size:10}},grid:{display:false,color:'#222'}}
       },
       plugins:{
@@ -870,7 +866,7 @@ function renderProjections() {
       responsive:true,maintainAspectRatio:false,
       scales:{
         x:{grid:{display:false,color:'#222'},ticks:{font:{size:11}}},
-        y:{ticks:{callback:v=>`${Math.round(v/1000)}k?`,font:{size:10},color:'#666'},grid:{color:'#222'}}
+        y:{ticks:{callback:function(v){return Math.round(v/1000)+'k';},font:{size:10},color:'#666'},grid:{color:'#222'}}
       },
       plugins:{
         legend:{display:false},
@@ -910,7 +906,7 @@ function renderProjections() {
       responsive:true,maintainAspectRatio:false,
       scales:{
         x:{grid:{display:false,color:'#222'},ticks:{font:{size:11}}},
-        y:{ticks:{callback:v=>`${v}%`,font:{size:10},color:'#666'},grid:{color:'#222'},min:0}
+        y:{ticks:{callback:function(v){return v+'%';},font:{size:10},color:'#666'},grid:{color:'#222'},min:0}
       },
       plugins:{
         legend:{display:false},
@@ -1219,52 +1215,37 @@ window.addEventListener('load', () => {
   } catch(e) { console.warn('Version check error:', e); }
 
   // Attendre que Chart.js soit pret avant de rendre
-  var _dbgDiv = document.createElement('div');
-  _dbgDiv.id = 'debugMsg';
-  _dbgDiv.style = 'position:fixed;bottom:10px;left:10px;background:#ff6b00;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px;z-index:9999;max-width:400px;display:none';
-  document.body.appendChild(_dbgDiv);
-  function dbg(msg) {
-    _dbgDiv.style.display = 'block';
-    _dbgDiv.innerHTML = msg;
-    console.log('[DEBUG]', msg);
-  }
-
   function initDashboard() {
-    dbg('Initialisation...');
     if(typeof Chart === 'undefined') {
-      dbg('Chart.js pas encore charge, retry...');
+      console.log('Chart.js pas encore charge, retry...');
       setTimeout(initDashboard, 100);
       return;
     }
-    dbg('Chart.js OK. Verification localStorage...');
     const saved = loadFromStorage();
     if(saved && saved.rows && saved.rows.length > 0) {
       try {
-        dbg('Restauration ' + saved.rows.length + ' lignes...');
+        console.log('Restauration ');
         recomputeDepenses(saved.rows);
         const msg = saved.age > 0 ? 'Donnees du ' + saved.age + 'j ? ' : 'Donnees recentes - ';
         showStatus('OK ' + msg + saved.rows.length + ' lignes restaurees');
         document.getElementById('welcomeOverlay').style.display = 'none';
-        dbg('Restauration OK ?');
+        console.log('Restauration OK ?');
         // debug reste visible
       } catch(e) {
-        dbg('ERREUR localStorage: ' + e.message);
+        console.log('ERREUR localStorage: ');
         clearStorage();
         renderAll();
         updateYearFilters();
         setTimeout(showWelcome, 300);
       }
     } else {
-      dbg('Pas de donnees sauvegardees. Rendu demo...');
-      try {
+        try {
         renderAll();
-        dbg('renderAll OK');
-        updateYearFilters();
-        dbg('updateYearFilters OK');
-        setTimeout(showWelcome, 300);
+            updateYearFilters();
+            setTimeout(showWelcome, 300);
         // debug reste visible
       } catch(e) {
-        dbg('ERREUR renderAll: ' + e.message);
+        console.log('ERREUR renderAll: ');
       }
     }
   }
