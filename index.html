@@ -514,11 +514,11 @@ function renderDonut(yr) {
           backgroundColor:'#1a1a1a',borderColor:'#333',borderWidth:1,
           titleColor:'#888',bodyColor:'#f1f5f9',padding:12,cornerRadius:10,
           callbacks:{
-            title:items=>[items[0].label],
-            label:ctx=>{
-              const pct=Math.round(ctx.parsed/total*100);
-              const rank=ctx.dataIndex+1;
-              return [`  ${FMT(ctx.parsed)}  ·  ${pct}% du total`,`  Rang #${rank} sur ${cats.length}`];
+            title:function(items){return [items[0].label];},
+            label:function(ctx){
+              var pct=Math.round(ctx.parsed/total*100);
+              var rank=ctx.dataIndex+1;
+              return ['  '+FMT(ctx.parsed)+'  ·  '+pct+'% du total','  Rang #'+rank+' sur '+cats.length];
             }
           }
         }
@@ -559,13 +559,13 @@ function renderMois(yr) {
           backgroundColor:'#1a1a1a',borderColor:'#333',borderWidth:1,
           titleColor:'#ff9a4d',bodyColor:'#ccc',padding:12,cornerRadius:10,
           callbacks:{
-            title:items=>[`${items[0].label}`],
-            label:ctx=>ctx.parsed.y>0?`  ${ctx.dataset.label} : ${FMT(ctx.parsed.y)}`:null,
-            footer:items=>{
-              const tot=items.reduce((s,i)=>s+i.parsed.y,0);
-              const cats2=items.filter(i=>i.parsed.y>0).sort((a,b)=>b.parsed.y-a.parsed.y);
-              const top=cats2[0];
-              return [`Total ce mois : ${FMT(tot)}`, top?`Dominante : ${top.dataset.label} (${Math.round(top.parsed.y/tot*100)}%)`:''];
+            title:function(items){return [items[0].label];},
+            label:function(ctx){return ctx.parsed.y>0?'  '+ctx.dataset.label+' : '+FMT(ctx.parsed.y):null;},
+            footer:function(items){
+              var tot=items.reduce(function(s,i){return s+i.parsed.y;},0);
+              var sorted=items.filter(function(i){return i.parsed.y>0;}).sort(function(a,b){return b.parsed.y-a.parsed.y;});
+              var top=sorted[0];
+              return ['Total : '+FMT(tot), top?'Dominante : '+top.dataset.label+' ('+Math.round(top.parsed.y/tot*100)+'%)':''];
             }
           }
         }
@@ -632,11 +632,11 @@ function renderFournChart(yr) {
           backgroundColor:'#1a1a1a',borderColor:'#333',borderWidth:1,
           titleColor:'#ff9a4d',bodyColor:'#f1f5f9',padding:12,cornerRadius:10,
           callbacks:{
-          title:items=>[items[0].label],
-          label:ctx=>`  ${ctx.dataset.label} : ${FMT(ctx.parsed.x)}`,
-          footer:items=>{
-            const tot=items.reduce((s,i)=>s+(i.parsed.x||0),0);
-            return tot>0?`Total cumulé : ${FMT(tot)}`:'';
+          title:function(items){return [items[0].label];},
+          label:function(ctx){return '  '+ctx.dataset.label+' : '+FMT(ctx.parsed.x);},
+          footer:function(items){
+            var tot=items.reduce(function(s,i){return s+(i.parsed.x||0);},0);
+            return tot>0?'Total cumulé : '+FMT(tot):'';
           }
         }
         }
@@ -779,16 +779,16 @@ function renderAltChart() {
       plugins:{
         legend:{display:false},
         tooltip:{backgroundColor:'#1a1a1a',borderColor:'#444',borderWidth:1,titleColor:'#ff9a4d',bodyColor:'#f1f5f9',footerColor:'#666',padding:12,cornerRadius:10,displayColors:true,callbacks:{
-          title:items=>[items[0].label],
-          label:ctx=>{
-            const alts=generateAlternatives().filter(r=>r.eco>0);
-            const a=alts[ctx.dataIndex];
-            return a?[`  Économie estimée : ${FMT(ctx.parsed.x)}`,`  Réduction : ${a.pct}% du coût actuel`]:[`  ${FMT(ctx.parsed.x)}`];
+          title:function(items){return [items[0].label];},
+          label:function(ctx){
+            var alts=generateAlternatives().filter(function(r){return r.eco>0;});
+            var a=alts[ctx.dataIndex];
+            return a?['  Economie : '+FMT(ctx.parsed.x),'  Reduction : '+a.pct+'%']:['  '+FMT(ctx.parsed.x)];
           },
-          footer:items=>{
-            const alts=generateAlternatives().filter(r=>r.eco>0);
-            const a=alts[items[0].dataIndex];
-            return a?[`Priorité : ${a.prio}  ·  Faisabilité : ${a.fais}`,`Coût actuel : ${FMT(a.act)}  →  Alternatif : ${a.altc>0?FMT(a.altc):'Gratuit'}`]:[];
+          footer:function(items){
+            var alts=generateAlternatives().filter(function(r){return r.eco>0;});
+            var a=alts[items[0].dataIndex];
+            return a?['Priorite : '+a.prio+' · Faisabilite : '+a.fais,'Actuel : '+FMT(a.act)+' → Alt : '+(a.altc>0?FMT(a.altc):'Gratuit')]:[];
           }
         }}
       }
@@ -874,18 +874,15 @@ function renderProjections() {
       plugins:{
         legend:{display:false},
         tooltip:{backgroundColor:'#1a1a1a',borderColor:'#444',borderWidth:1,titleColor:'#ff9a4d',bodyColor:'#f1f5f9',footerColor:'#666',padding:12,cornerRadius:10,displayColors:true,mode:'index',intersect:false,callbacks:{
-          title:items=>[`${items[0].label}`],
-          label:ctx=>`  ${ctx.dataset.label} : ${FMT(ctx.parsed.y)}`,
-          footer:items=>{
-            const caDs=items[0].chart.data.datasets.find(d=>d.label==='CA');
-            const resDs=items[0].chart.data.datasets.find(d=>d.label==='Résultat net');
+          title:function(items){return [items[0].label];},
+          label:function(ctx){return '  '+ctx.dataset.label+' : '+FMT(ctx.parsed.y);},
+          footer:function(items){
+            var caDs=items[0].chart.data.datasets.find(function(d){return d.label==='CA';});
+            var resDs=items[0].chart.data.datasets.find(function(d){return d.label==='Resultat net';});
             if(caDs&&resDs){
-              const i=items[0].dataIndex;
-              const ca=caDs.data[i],res=resDs.data[i];
-              if(ca>0){
-                const renta=Math.round(res/ca*1000)/10;
-                return `Taux de rentabilité : ${renta}%`;
-              }
+              var i=items[0].dataIndex;
+              var ca=caDs.data[i],res=resDs.data[i];
+              if(ca>0){return 'Rentabilite : '+Math.round(res/ca*1000)/10+'%';}
             }
             return '';
           }
@@ -917,17 +914,16 @@ function renderProjections() {
       plugins:{
         legend:{display:false},
         tooltip:{backgroundColor:'#1a1a1a',borderColor:'#444',borderWidth:1,titleColor:'#ff9a4d',bodyColor:'#f1f5f9',footerColor:'#666',padding:12,cornerRadius:10,displayColors:true,callbacks:{
-          title:items=>[`${items[0].label}`],
-          label:ctx=>`  Rentabilité : ${ctx.parsed.y}%`,
-          footer:items=>{
-            const idx=items[0].dataIndex;
-            const data=items[0].chart.data.datasets[0].data;
-            if(idx>0&&data[idx-1]!=null){
-              const diff=Math.round((data[idx]-data[idx-1])*10)/10;
-              const sign=diff>=0?'+':'';
-              return `Évolution : ${sign}${diff} pts vs période précédente`;
+          title:function(items){return [items[0].label];},
+          label:function(ctx){return '  Rentabilite : '+ctx.parsed.y+'%';},
+          footer:function(items){
+            var i=items[0].dataIndex;
+            var data=items[0].chart.data.datasets[0].data;
+            if(i>0&&data[i-1]!=null){
+              var diff=Math.round((data[i]-data[i-1])*10)/10;
+              return 'Evolution : '+(diff>=0?'+':'')+diff+' pts vs precedent';
             }
-            return `Première année de référence`;
+            return 'Premiere annee de reference';
           }
         }}
       }
