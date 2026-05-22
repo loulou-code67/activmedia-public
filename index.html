@@ -8,68 +8,96 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;color:#1e293b;font-size:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#141414;color:#f1f5f9;font-size:14px}
+
 /* --- HEADER --- */
-.header{background:#1e3a5f;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.header{background:#111111;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:0.5px solid #2a2a2a}
 .header-brand{display:flex;align-items:center;gap:12px}
-.header-logo{width:36px;height:36px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px}
+.header-logo{width:36px;height:36px;background:#ff6b00;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px}
 .header h1{color:#fff;font-size:17px;font-weight:600}
-.header-sub{color:#93c5fd;font-size:12px;margin-top:1px}
+.header-sub{color:#888;font-size:12px;margin-top:1px}
 .header-right{display:flex;align-items:center;gap:10px}
-.btn-import{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:7px;font-size:13px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px}
-.btn-import:hover{background:rgba(255,255,255,.22)}
-.import-status{font-size:12px;color:#93c5fd;display:none}
+.btn-import{background:rgba(255,107,0,.15);color:#ff9a4d;border:1px solid #ff6b00;padding:7px 14px;border-radius:7px;font-size:13px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px}
+.btn-import:hover{background:rgba(255,107,0,.25)}
+.import-status{font-size:12px;color:#ff9a4d;display:none}
+
 /* --- NAV --- */
-.nav{background:#fff;border-bottom:2px solid #e2e8f0;padding:0 24px;display:flex;gap:0;overflow-x:auto}
-.nav-tab{padding:13px 20px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.15s}
-.nav-tab:hover{color:#2563eb}
-.nav-tab.active{color:#2563eb;border-bottom-color:#2563eb;font-weight:600}
+.nav{background:#1a1a1a;border-bottom:0.5px solid #2a2a2a;padding:0 24px;display:flex;gap:0;overflow-x:auto}
+.nav-tab{padding:13px 20px;font-size:13px;font-weight:500;color:#666;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:.15s}
+.nav-tab:hover{color:#ff9a4d}
+.nav-tab.active{color:#ff6b00;border-bottom-color:#ff6b00;font-weight:600}
+
 /* --- FILTER --- */
-.filter-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 24px;display:flex;align-items:center;gap:8px}
-.filter-label{font-size:12px;color:#64748b;font-weight:500;margin-right:4px}
-.filter-btn{padding:5px 14px;border:1px solid #e2e8f0;border-radius:20px;font-size:12px;color:#64748b;background:#fff;cursor:pointer;transition:.15s}
-.filter-btn:hover{border-color:#2563eb;color:#2563eb}
-.filter-btn.active{background:#2563eb;color:#fff;border-color:#2563eb}
+.filter-bar{background:#1f1f1f;border-bottom:0.5px solid #2a2a2a;padding:10px 24px;display:flex;align-items:center;gap:8px}
+.filter-label{font-size:12px;color:#555;font-weight:500;margin-right:4px}
+.filter-btn{padding:5px 14px;border:1px solid #333;border-radius:20px;font-size:12px;color:#666;background:#111;cursor:pointer;transition:.15s}
+.filter-btn:hover{border-color:#ff6b00;color:#ff9a4d}
+.filter-btn.active{background:#ff6b00;color:#fff;border-color:#ff6b00}
+
 /* --- MAIN --- */
 .main{padding:20px 24px;max-width:1400px}
 .page{display:none}
 .page.active{display:block}
-/* --- KPI --- */
+
+/* --- KPI CARDS --- */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-.kpi-card{background:#fff;border-radius:10px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-top:4px solid #2563eb}
+.kpi-card{background:#1f1f1f;border-radius:10px;padding:18px 20px;border:0.5px solid #2a2a2a;border-top:4px solid #ff6b00;position:relative;cursor:pointer;transition:.15s}
+.kpi-card:hover{border-color:#ff6b00;background:#252525}
 .kpi-card.c2{border-top-color:#f59e0b}
-.kpi-card.c3{border-top-color:#059669}
-.kpi-card.c4{border-top-color:#7c3aed}
+.kpi-card.c3{border-top-color:#10b981}
+.kpi-card.c4{border-top-color:#a78bfa}
 .kpi-card.c5{border-top-color:#ef4444}
-.kpi-label{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-.kpi-value{font-size:24px;font-weight:700;color:#1e293b;line-height:1.2}
-.kpi-sub{font-size:11px;color:#94a3b8;margin-top:3px}
+.kpi-label{font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kpi-value{font-size:24px;font-weight:700;color:#f1f5f9;line-height:1.2}
+.kpi-sub{font-size:11px;color:#444;margin-top:3px}
+
+/* --- TOOLTIP STYLE 2 (carte détaillée) --- */
+.kpi-tt{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#1a1a1a;border:0.5px solid #333;border-radius:10px;padding:11px 15px;min-width:160px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;white-space:nowrap}
+.kpi-card:hover .kpi-tt{opacity:1}
+.kpi-tt-title{font-size:11px;color:#666;margin-bottom:5px}
+.kpi-tt-val{font-size:18px;font-weight:600;color:#f1f5f9}
+.kpi-tt-sub{font-size:11px;color:#555;margin-top:3px}
+.kpi-tt::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#333}
+
 /* --- CHARTS --- */
 .charts-2col{display:grid;grid-template-columns:5fr 8fr;gap:16px;margin-bottom:16px}
-.chart-card{background:#fff;border-radius:10px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.chart-title{font-size:13px;font-weight:600;color:#1e293b;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #f1f5f9}
+.chart-card{background:#1f1f1f;border-radius:10px;padding:18px 20px;border:0.5px solid #2a2a2a}
+.chart-card:hover{border-color:#333}
+.chart-title{font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:14px;padding-bottom:10px;border-bottom:0.5px solid #2a2a2a}
 .legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px}
-.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:#64748b}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:#555}
 .leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
-/* --- TABLE --- */
+
+/* --- TABLES --- */
 .tbl-wrap{overflow-x:auto;margin-top:4px}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
-thead th{background:#f8fafc;padding:9px 12px;text-align:left;font-weight:600;color:#475569;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid #e2e8f0;white-space:nowrap}
-tbody tr:hover{background:#f8fafc}
-tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-space:nowrap}
+thead th{background:#161616;padding:9px 12px;text-align:left;font-weight:600;color:#555;font-size:11px;text-transform:uppercase;letter-spacing:.03em;border-bottom:0.5px solid #2a2a2a;white-space:nowrap}
+tbody tr{border-bottom:0.5px solid #222}
+tbody tr:hover{background:#252525}
+tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
+
+/* --- BADGES --- */
 .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:600}
-.b-haute{background:#fef2f2;color:#dc2626}
-.b-moyenne{background:#fff7ed;color:#ea580c}
-.b-basse{background:#f0fdf4;color:#16a34a}
-.b-facile{background:#eff6ff;color:#2563eb}
-.b-moyen{background:#faf5ff;color:#7c3aed}
-.b-difficile{background:#fef9c3;color:#854d0e}
-.b-technique{background:#f0fdf4;color:#065f46}
-.b-nouveau{background:#eff6ff;color:#2563eb}
-.evo-pos{color:#dc2626;font-weight:600}
-.evo-neg{color:#16a34a;font-weight:600}
-.evo-zero{color:#94a3b8}
-.section-title{font-size:13px;font-weight:600;color:#1e293b;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid #e2e8f0}
+.b-haute{background:rgba(239,68,68,.15);color:#f87171}
+.b-moyenne{background:rgba(245,158,11,.15);color:#fbbf24}
+.b-basse{background:rgba(16,185,129,.15);color:#34d399}
+.b-facile{background:rgba(59,130,246,.15);color:#60a5fa}
+.b-moyen{background:rgba(167,139,250,.15);color:#a78bfa}
+.b-difficile{background:rgba(251,191,36,.15);color:#fcd34d}
+.b-technique{background:rgba(52,211,153,.15);color:#6ee7b7}
+.b-nouveau{background:rgba(255,107,0,.15);color:#ff9a4d}
+.evo-pos{color:#f87171;font-weight:600}
+.evo-neg{color:#34d399;font-weight:600}
+.evo-zero{color:#555}
+
+/* --- INFOBANNER --- */
+.info-banner{background:rgba(255,107,0,.1);border-left:4px solid #ff6b00;border-radius:0 8px 8px 0;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#ff9a4d}
+.info-banner strong{color:#ffb347}
+.info-banner code{background:rgba(255,107,0,.2);padding:1px 6px;border-radius:4px;font-size:12px;color:#ffb347}
+
+/* --- SECTION TITLE --- */
+.section-title{font-size:13px;font-weight:600;color:#e2e8f0;margin:20px 0 12px;padding-bottom:8px;border-bottom:0.5px solid #2a2a2a}
+
 @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.charts-2col{grid-template-columns:1fr}}
 </style>
 </head>
@@ -115,10 +143,10 @@ tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-sp
 <!-- ============================== PAGE 1 : VUE D'ENSEMBLE ============================== -->
 <div class="page active" id="page-overview">
   <div class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-label">Total Dépenses</div><div class="kpi-value" id="kpi-total">99 421 €</div><div class="kpi-sub">Toutes années</div></div>
-    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-fourn">71</div><div class="kpi-sub">Fournisseurs uniques</div></div>
-    <div class="kpi-card c3"><div class="kpi-label">Nb Factures</div><div class="kpi-value" id="kpi-fac">376</div><div class="kpi-sub">Documents traités</div></div>
-    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen</div><div class="kpi-value" id="kpi-moy">264 €</div><div class="kpi-sub">Par facture</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Dépenses</div><div class="kpi-value" id="kpi-total">99 421 €</div><div class="kpi-sub">Toutes années</div><div class="kpi-tt"><div class="kpi-tt-title">Total dépenses (toutes années)</div><div class="kpi-tt-val" id="tt-total">99 421 €</div><div class="kpi-tt-sub">376 factures · 71 fournisseurs</div></div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-fourn">71</div><div class="kpi-sub">Fournisseurs uniques</div><div class="kpi-tt"><div class="kpi-tt-title">Fournisseurs uniques détectés</div><div class="kpi-tt-val" id="tt-fourn">71</div><div class="kpi-tt-sub">Top fournisseur : LAB</div></div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Nb Factures</div><div class="kpi-value" id="kpi-fac">376</div><div class="kpi-sub">Documents traités</div><div class="kpi-tt"><div class="kpi-tt-title">Factures & reçus traités</div><div class="kpi-tt-val" id="tt-fac">376</div><div class="kpi-tt-sub">Extraction PDF automatisée</div></div></div>
+    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen</div><div class="kpi-value" id="kpi-moy">264 €</div><div class="kpi-sub">Par facture</div><div class="kpi-tt"><div class="kpi-tt-title">Montant moyen par facture</div><div class="kpi-tt-val" id="tt-moy">264 €</div><div class="kpi-tt-sub">Médiane estimée : ~120 €</div></div></div>
   </div>
   <div class="charts-2col">
     <div class="chart-card">
@@ -158,7 +186,7 @@ tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-sp
 
 <!-- ============================== PAGE 3 : ALTERNATIVES ============================== -->
 <div class="page" id="page-alternatives">
-  <div style="background:#eff6ff;border-left:4px solid #2563eb;border-radius:0 8px 8px 0;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#1e40af">
+  <div class="info-banner">
     <strong>Alternatives automatiques</strong> — Cette page génère des pistes d'optimisation automatiquement depuis vos données de dépenses. Importez un nouveau <code>depenses_clean_final.csv</code> pour les actualiser.
   </div>
   <div class="kpi-grid">
@@ -184,7 +212,7 @@ tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-sp
 
 <!-- ============================== PAGE 4 : PROJECTIONS ============================== -->
 <div class="page" id="page-projections">
-  <div style="background:#eff6ff;border-left:4px solid #2563eb;border-radius:0 8px 8px 0;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#1e40af">
+  <div class="info-banner">
     <strong>Projections automatiques</strong> — Les projections sont calculées automatiquement depuis vos données de dépenses importées. Importez un nouveau <code>depenses_clean_final.csv</code> pour les actualiser.
   </div>
   <div class="kpi-grid">
@@ -198,9 +226,9 @@ tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-sp
       <div class="chart-title">CA & Résultat net (2022–2026)</div>
       <div style="position:relative;height:300px"><canvas id="chartProj" role="img" aria-label="Évolution CA et résultat net 2022-2026"></canvas></div>
       <div class="legend" style="margin-top:10px">
-        <div class="leg"><div class="leg-sq" style="background:#2563eb"></div>CA</div>
-        <div class="leg"><div class="leg-sq" style="background:#059669"></div>Résultat net</div>
-        <div class="leg"><div class="leg-sq" style="background:#f59e0b"></div>Résultat avec alternatives</div>
+        <div class="leg"><div class="leg-sq" style="background:#ff6b00"></div><span style="color:#888">CA</span></div>
+        <div class="leg"><div class="leg-sq" style="background:#10b981"></div><span style="color:#888">Résultat net</span></div>
+        <div class="leg"><div class="leg-sq" style="background:#f59e0b"></div><span style="color:#888">Résultat avec alternatives</span></div>
       </div>
     </div>
     <div class="chart-card">
@@ -450,13 +478,20 @@ function renderDonut(yr) {
       responsive:true,maintainAspectRatio:false,cutout:'62%',
       plugins:{
         legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${FMT(ctx.parsed)} (${Math.round(ctx.parsed/total*100)}%)`}}
+        tooltip:{
+          backgroundColor:'#1a1a1a',borderColor:'#333',borderWidth:1,
+          titleColor:'#888',bodyColor:'#f1f5f9',padding:12,cornerRadius:10,
+          callbacks:{
+            title:items=>[items[0].label],
+            label:ctx=>`${FMT(ctx.parsed)} — ${Math.round(ctx.parsed/total*100)}% du total`
+          }
+        }
       }
     }
   });
   // Custom legend
   const leg = document.getElementById('legendDonut');
-  leg.innerHTML = cats.map(c=>`<div class="leg"><div class="leg-sq" style="background:${CAT_COLORS[c.k]||'#94a3b8'}"></div>${CAT_LABELS[c.k]||c.k}: <strong style="color:#1e293b;margin-left:3px">${FMT(c.v)}</strong></div>`).join('');
+  leg.innerHTML = cats.map(c=>`<div class="leg"><div class="leg-sq" style="background:${CAT_COLORS[c.k]||'#94a3b8'}"></div><span style="color:#888">${CAT_LABELS[c.k]||c.k}:</span> <strong style="color:#e2e8f0;margin-left:3px">${FMT(c.v)}</strong></div>`).join('');
 }
 
 function renderMois(yr) {
@@ -478,12 +513,20 @@ function renderMois(yr) {
     options:{
       responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{stacked:true,ticks:{maxRotation:45,font:{size:10}},grid:{display:false}},
-        y:{stacked:true,ticks:{callback:v=>v>=1000?`${v/1000}k€`:`${v}€`,font:{size:10}},grid:{color:'#f1f5f9'}}
+        x:{stacked:true,ticks:{maxRotation:45,font:{size:10}},grid:{display:false,color:'#222'}},
+        y:{stacked:true,ticks:{callback:v=>v>=1000?`${v/1000}k€`:`${v}€`,font:{size:10},color:'#666'},grid:{color:'#222'}}
       },
       plugins:{
         legend:{display:false},
-        tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>ctx.parsed.y>0?`${ctx.dataset.label}: ${FMT(ctx.parsed.y)}`:null,afterTitle:items=>`Total: ${FMT(items.reduce((s,i)=>s+i.parsed.y,0))}`}}
+        tooltip:{
+          mode:'index',intersect:false,
+          backgroundColor:'#1a1a1a',borderColor:'#333',borderWidth:1,
+          titleColor:'#ff9a4d',bodyColor:'#ccc',padding:12,cornerRadius:10,
+          callbacks:{
+            label:ctx=>ctx.parsed.y>0?`  ${ctx.dataset.label}: ${FMT(ctx.parsed.y)}`:null,
+            footer:items=>`Total : ${FMT(items.reduce((s,i)=>s+i.parsed.y,0))}`
+          }
+        }
       }
     }
   });
@@ -538,12 +581,16 @@ function renderFournChart(yr) {
       indexAxis:'y',
       responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{ticks:{callback:v=>`${Math.round(v/1000)}k€`,font:{size:10}},grid:{color:'#f1f5f9'}},
-        y:{ticks:{font:{size:11}},grid:{display:false}}
+        x:{ticks:{callback:v=>`${Math.round(v/1000)}k€`,font:{size:10},color:'#666'},grid:{color:'#222'}},
+        y:{ticks:{font:{size:11}},grid:{display:false,color:'#222'}}
       },
       plugins:{
-        legend:{display:yr==='all',position:'top',labels:{font:{size:11},boxWidth:12}},
-        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${FMT(ctx.parsed.x)}`}}
+        legend:{display:yr==='all',position:'top',labels:{font:{size:11},boxWidth:12,color:'#888'}},
+        tooltip:{
+          backgroundColor:'#1a1a1a',borderColor:'#333',borderWidth:1,
+          titleColor:'#ff9a4d',bodyColor:'#f1f5f9',padding:12,cornerRadius:10,
+          callbacks:{label:ctx=>`  ${ctx.dataset.label}: ${FMT(ctx.parsed.x)}`}
+        }
       }
     }
   });
@@ -645,8 +692,8 @@ function renderAltChart() {
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{ticks:{callback:v=>`${v}€`,font:{size:10}},grid:{color:'#f1f5f9'}},
-        y:{ticks:{font:{size:10}},grid:{display:false}}
+        x:{ticks:{callback:v=>`${v}€`,font:{size:10},color:'#666'},grid:{color:'#222'}},
+        y:{ticks:{font:{size:10}},grid:{display:false,color:'#222'}}
       },
       plugins:{
         legend:{display:false},
@@ -728,8 +775,8 @@ function renderProjections() {
     options:{
       responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{grid:{display:false},ticks:{font:{size:11}}},
-        y:{ticks:{callback:v=>`${Math.round(v/1000)}k€`,font:{size:10}},grid:{color:'#f1f5f9'}}
+        x:{grid:{display:false,color:'#222'},ticks:{font:{size:11}}},
+        y:{ticks:{callback:v=>`${Math.round(v/1000)}k€`,font:{size:10},color:'#666'},grid:{color:'#222'}}
       },
       plugins:{
         legend:{display:false},
@@ -755,8 +802,8 @@ function renderProjections() {
     options:{
       responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{grid:{display:false},ticks:{font:{size:11}}},
-        y:{ticks:{callback:v=>`${v}%`,font:{size:10}},grid:{color:'#f1f5f9'},min:0}
+        x:{grid:{display:false,color:'#222'},ticks:{font:{size:11}}},
+        y:{ticks:{callback:v=>`${v}%`,font:{size:10},color:'#666'},grid:{color:'#222'},min:0}
       },
       plugins:{
         legend:{display:false},
