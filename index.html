@@ -117,6 +117,7 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
   </div>
   <div class="header-right">
     <span class="import-status" id="importStatus">✓ CSV importé</span>
+    <button class="btn-import" onclick="resetData()" style="background:rgba(255,107,0,.08);color:#555;border-color:#333;font-size:12px" title="Effacer les données et réinitialiser">↺</button>
     <button class="btn-import" onclick="document.getElementById('csvInput').click()">
       ↑ Importer CSV
     </button>
@@ -136,9 +137,21 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 <div class="filter-bar">
   <span class="filter-label">Année :</span>
   <button class="filter-btn active" onclick="setYear('all',this)">Toutes</button>
-  <button class="filter-btn" onclick="setYear('2023',this)">2023</button>
-  <button class="filter-btn" onclick="setYear('2024',this)">2024</button>
-  <button class="filter-btn" onclick="setYear('2025',this)">2025</button>
+  <span id="dynYearBtns"></span>
+</div>
+
+<!-- WELCOME OVERLAY -->
+<div id="welcomeOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:#1f1f1f;border:0.5px solid #333;border-radius:16px;padding:40px 48px;max-width:500px;width:90%;text-align:center">
+    <div style="width:56px;height:56px;background:#ff6b00;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 20px">AM</div>
+    <div style="font-size:22px;font-weight:700;color:#f1f5f9;margin-bottom:8px">ActivMedia Dashboard</div>
+    <div style="font-size:14px;color:#666;margin-bottom:28px;line-height:1.6">Importez votre fichier <code style="background:#2a2a2a;padding:2px 8px;border-radius:4px;color:#ff9a4d">depenses_clean_final.csv</code> pour visualiser vos dépenses, ou utilisez les données de démonstration.</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button onclick="document.getElementById('csvInput').click()" style="background:#ff6b00;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">↑ Importer mon CSV</button>
+      <button onclick="closeWelcome()" style="background:#2a2a2a;color:#aaa;border:0.5px solid #333;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer">Voir la démo</button>
+    </div>
+    <div style="font-size:11px;color:#444;margin-top:16px">Les données sont traitées localement — rien n'est envoyé sur internet</div>
+  </div>
 </div>
 
 <div class="main">
@@ -251,9 +264,10 @@ const FMT = (v) => new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR
 const FMT2 = (v) => new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(v);
 
 const CAT_COLORS = {
-  prestations:'#2563eb', materiel_achats:'#f59e0b', travaux:'#ef4444',
-  logiciels_abonnements:'#7c3aed', energie:'#059669', telecom:'#0891b2',
-  restauration:'#ea580c', transport:'#65a30d', assurance:'#db2777'
+  prestations:'#ff6b00', materiel_achats:'#f59e0b', travaux:'#ef4444',
+  logiciels_abonnements:'#7c3aed', energie:'#10b981', telecom:'#0891b2',
+  restauration:'#ea580c', transport:'#65a30d', assurance:'#db2777',
+  autre:'#64748b', formation:'#06b6d4', communication:'#8b5cf6'
 };
 const CAT_LABELS = {
   prestations:'Prestations', materiel_achats:'Matériel & Achats', travaux:'Travaux',
@@ -402,22 +416,21 @@ function setYear(y, el) {
 }
 
 function updateYearFilters() {
-  // Reconstruit les boutons de filtre selon les années réellement présentes dans les données
   const allYrs = getAvailableYears();
-  const bar = document.querySelector('.filter-bar');
-  // Garde le bouton Toutes + recrée les autres
-  const existing = bar.querySelectorAll('.filter-btn');
-  existing.forEach((b,i)=>{ if(i>0) b.remove(); });
+  const container = document.getElementById('dynYearBtns');
+  if(!container) return;
+  container.innerHTML = '';
   allYrs.forEach(yr=>{
     const btn = document.createElement('button');
     btn.className = 'filter-btn';
     btn.textContent = yr;
     btn.onclick = function(){ setYear(yr, this); };
-    bar.appendChild(btn);
+    container.appendChild(btn);
   });
   // Reset sur Toutes
   activeYear = 'all';
-  bar.querySelector('.filter-btn').classList.add('active');
+  document.querySelector('.filter-btn.active')?.classList.remove('active');
+  document.querySelector('.filter-btn')?.classList.add('active');
 }
 
 // =====================================================================
@@ -620,6 +633,10 @@ function renderFournEvoTable() {
   const tbody = document.getElementById('tbodyFournEvo');
   const th=document.querySelector('#tableFournEvo thead tr');
   const yrs=th?[...th.querySelectorAll('th')].slice(1,3).map(t=>t.textContent):['2023','2025'];
+  if(!FOURN_EVO.length){
+    tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:#444">Aucune donnée — importez un CSV pour afficher l'évolution des fournisseurs</td></tr>';
+    return;
+  }
   tbody.innerHTML = FOURN_EVO.map(r=>{
     let evoBadge,context;
     if(r.evo===null){
@@ -701,6 +718,10 @@ function updateAltKPIs(alts) {
 function renderAltTable() {
   const alts = generateAlternatives();
   updateAltKPIs(alts);
+  if(!alts.length){
+    document.getElementById('tbodyAlt').innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:#444">Aucune alternative — importez un CSV pour générer des recommandations automatiques</td></tr>';
+    return;
+  }
   document.getElementById('tbodyAlt').innerHTML = alts.map(r=>{
     const bc = r.prio.toLowerCase();
     const fc = r.fais.toLowerCase();
@@ -911,30 +932,38 @@ function handleCSV(input) {
   Papa.parse(file,{
     header:true, dynamicTyping:true, skipEmptyLines:true,
     complete:function(res){
-      const rows = res.data.filter(r=>Object.keys(r).some(k=>r[k]!==null));
-      if(!rows.length){ showStatus('❌ Fichier vide ou illisible.', true); return; }
-      const cols = Object.keys(rows[0]);
+      try {
+        const rows = res.data.filter(r=>Object.keys(r).some(k=>r[k]!==null));
+        if(!rows.length){ showStatus('❌ Fichier vide ou illisible.', true); return; }
+        const cols = Object.keys(rows[0]);
 
-      // Détection automatique par colonnes
-      if(cols.includes('montant_ttc') && cols.includes('fournisseur')) {
-        const depenses = rows.filter(r=>r.montant_ttc>0 && r.est_depense!==false);
-        if(!depenses.length){ showStatus('❌ Aucune dépense valide trouvée.', true); return; }
-        recomputeDepenses(depenses);
-        showStatus(`✓ Dépenses : ${depenses.length} lignes importées`);
+        // Détection automatique par colonnes
+        if(cols.includes('montant_ttc') && cols.includes('fournisseur')) {
+          const depenses = rows.filter(r=>r.montant_ttc>0 && r.est_depense!==false);
+          if(!depenses.length){ showStatus('❌ Aucune dépense valide trouvée.', true); return; }
+          recomputeDepenses(depenses);
+          closeWelcome();
+          showStatus(`✓ Dépenses : ${depenses.length} lignes importées`);
 
-      } else if(cols.includes('fournisseur_actuel') && cols.includes('alternative_proposee')) {
-        recomputeAlternatives(rows);
-        showStatus(`✓ Alternatives : ${rows.length} lignes importées`);
+        } else if(cols.includes('fournisseur_actuel') && cols.includes('alternative_proposee')) {
+          recomputeAlternatives(rows);
+          closeWelcome();
+          showStatus(`✓ Alternatives : ${rows.length} lignes importées`);
 
-      } else if(cols.includes('resultat_net') && cols.includes('CA')) {
-        recomputeProjections(rows);
-        showStatus(`✓ Projections : ${rows.length} lignes importées`);
+        } else if(cols.includes('resultat_net') && cols.includes('CA')) {
+          recomputeProjections(rows);
+          closeWelcome();
+          showStatus(`✓ Projections : ${rows.length} lignes importées`);
 
-      } else {
-        showStatus('❌ Format CSV non reconnu. Attendu : depenses, alternatives ou projections.', true);
+        } else {
+          showStatus('❌ Format non reconnu. Colonnes détectées : ' + cols.slice(0,4).join(', '), true);
+        }
+      } catch(err) {
+        console.error('Erreur traitement CSV:', err);
+        showStatus('❌ Erreur lors du traitement : ' + err.message, true);
       }
     },
-    error:()=>showStatus('❌ Erreur lecture CSV.', true)
+    error:(err)=>showStatus('❌ Erreur lecture CSV : ' + (err.message||'fichier invalide'), true)
   });
   input.value='';
 }
@@ -951,6 +980,7 @@ function showStatus(msg, isErr=false) {
 function recomputeDepenses(rows) {
   window._rawRows = rows;
   ALTERNATIVES.length = 0; // Reset pour régénération automatique
+  saveToStorage(rows); // Persistance locale
   const allYrs = [...new Set(rows.map(r=>String(r.annee)).filter(Boolean))].sort();
 
   // KPIs globaux + par année
@@ -1086,7 +1116,87 @@ function recomputeProjections(rows) {
 // =====================================================================
 // INIT
 // =====================================================================
-window.addEventListener('load', ()=>renderAll());
+// =====================================================================
+// PERSISTANCE LOCALE (localStorage)
+// =====================================================================
+const LS_KEY = 'activmedia_data_v1';
+
+function saveToStorage(rows) {
+  try {
+    const payload = {
+      ts: Date.now(),
+      rows: rows.map(r=>({
+        fournisseur: r.fournisseur,
+        date_document: r.date_document,
+        montant_ttc: r.montant_ttc,
+        categorie_depense: r.categorie_depense,
+        annee: r.annee,
+        est_depense: r.est_depense
+      }))
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(payload));
+    console.log('Données sauvegardées localement:', rows.length, 'lignes');
+  } catch(e) {
+    console.warn('localStorage non disponible:', e);
+  }
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return null;
+    const payload = JSON.parse(raw);
+    const age = Math.round((Date.now() - payload.ts) / 86400000);
+    return {rows: payload.rows, age};
+  } catch(e) {
+    console.warn('Erreur lecture localStorage:', e);
+    return null;
+  }
+}
+
+function clearStorage() {
+  try { localStorage.removeItem(LS_KEY); } catch(e) {}
+}
+
+function resetData() {
+  if(!confirm('Effacer toutes les données importées et revenir à la démo ?')) return;
+  clearStorage();
+  window._rawRows = null;
+  ALTERNATIVES.length = 0;
+  // Reset KPI to demo values
+  KPI.all = {total:99421, fourn:71, fac:376, moy:264};
+  KPI['2023'] = {total:32539, fourn:35, fac:118, moy:276};
+  KPI['2024'] = {total:27914, fourn:27, fac:150, moy:186};
+  KPI['2025'] = {total:38968, fourn:40, fac:108, moy:361};
+  updateYearFilters();
+  renderAll();
+  showStatus('✓ Données réinitialisées');
+}
+
+function closeWelcome() {
+  document.getElementById('welcomeOverlay').style.display = 'none';
+}
+
+function showWelcome() {
+  document.getElementById('welcomeOverlay').style.display = 'flex';
+}
+
+window.addEventListener('load', () => {
+  // Tenter de charger les données du dernier import
+  const saved = loadFromStorage();
+  if(saved && saved.rows && saved.rows.length > 0) {
+    // Données trouvées dans localStorage
+    recomputeDepenses(saved.rows);
+    const msg = saved.age > 0 ? `Données du ${saved.age}j — ` : 'Données récentes — ';
+    showStatus(`✓ ${msg}${saved.rows.length} lignes restaurées`);
+    document.getElementById('welcomeOverlay').style.display = 'none';
+  } else {
+    // Aucune donnée — montrer l'écran d'accueil après 300ms
+    renderAll();
+    updateYearFilters();
+    setTimeout(showWelcome, 300);
+  }
+});
 </script>
 </body>
 </html>
