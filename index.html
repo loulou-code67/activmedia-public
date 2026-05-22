@@ -357,6 +357,25 @@ function setYear(y, el) {
   renderAll();
 }
 
+function updateYearFilters() {
+  // Reconstruit les boutons de filtre selon les années réellement présentes dans les données
+  const allYrs = getAvailableYears();
+  const bar = document.querySelector('.filter-bar');
+  // Garde le bouton Toutes + recrée les autres
+  const existing = bar.querySelectorAll('.filter-btn');
+  existing.forEach((b,i)=>{ if(i>0) b.remove(); });
+  allYrs.forEach(yr=>{
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.textContent = yr;
+    btn.onclick = function(){ setYear(yr, this); };
+    bar.appendChild(btn);
+  });
+  // Reset sur Toutes
+  activeYear = 'all';
+  bar.querySelector('.filter-btn').classList.add('active');
+}
+
 // =====================================================================
 // HELPERS
 // =====================================================================
@@ -460,16 +479,22 @@ function renderMois(yr) {
 // =====================================================================
 // PAGE 2 — FOURNISSEURS
 // =====================================================================
+function getAvailableYears() {
+  const yrs = new Set();
+  FOURN_YEAR.forEach(r => Object.keys(r).forEach(k => { if(/^\d{4}$/.test(k)) yrs.add(k); }));
+  return [...yrs].sort();
+}
+
 function renderFournKPIs(yr) {
   const k = KPI[yr] || KPI.all;
   document.getElementById('kpi-f-total').textContent = FMT(k.total);
   document.getElementById('kpi-f-fourn').textContent = FMT2(k.fourn);
   const mFourn = k.fourn > 0 ? Math.round(k.total / k.fourn) : 0;
   document.getElementById('kpi-f-moy').textContent = FMT(mFourn);
-  // Fournisseur principal dépend de l'année
   const yr2 = yr === 'all' ? null : yr;
+  const allYrs = getAvailableYears();
   const top = FOURN_YEAR.map(r=>{
-    const v = yr2 ? (r[yr2]||0) : ((r['2023']||0)+(r['2024']||0)+(r['2025']||0));
+    const v = yr2 ? (r[yr2]||0) : allYrs.reduce((s,y)=>s+(r[y]||0),0);
     return {f:r.f, v};
   }).sort((a,b)=>b.v-a.v)[0];
   document.getElementById('kpi-f-main').textContent = top && top.v > 0 ? top.f : 'N/A';
@@ -478,18 +503,21 @@ function renderFournKPIs(yr) {
 function renderFournChart(yr) {
   destroyChart('chartFourn');
   const yr2 = yr === 'all' ? null : yr;
+  const allYrs = getAvailableYears();
+  const barColors = ['#93c5fd','#60a5fa','#2563eb','#1e3a5f','#172554','#0f172a'];
   const sorted = [...FOURN_YEAR].map(r=>{
-    const t = yr2?(r[yr2]||0):((r['2023']||0)+(r['2024']||0)+(r['2025']||0));
+    const t = yr2 ? (r[yr2]||0) : allYrs.reduce((s,y)=>s+(r[y]||0),0);
     return {...r, total:t};
   }).sort((a,b)=>b.total-a.total).slice(0,10).reverse();
   const labels = sorted.map(r=>r.f);
   const datasets = yr2 ? [
     {label:yr2, data:sorted.map(r=>r[yr2]||0), backgroundColor:'#2563eb', borderRadius:4}
-  ] : [
-    {label:'2023', data:sorted.map(r=>r['2023']||0), backgroundColor:'#60a5fa', borderRadius:2},
-    {label:'2024', data:sorted.map(r=>r['2024']||0), backgroundColor:'#2563eb', borderRadius:2},
-    {label:'2025', data:sorted.map(r=>r['2025']||0), backgroundColor:'#1e3a5f', borderRadius:2}
-  ];
+  ] : allYrs.map((y,i)=>({
+    label:y,
+    data:sorted.map(r=>r[y]||0),
+    backgroundColor:barColors[i % barColors.length],
+    borderRadius:2
+  }));
   charts.chartFourn = new Chart(document.getElementById('chartFourn'),{
     type:'bar',
     data:{labels,datasets},
@@ -763,6 +791,7 @@ function recomputeDepenses(rows) {
   FOURN_EVO.length=0;
   newEvo.forEach(r=>FOURN_EVO.push(r));
 
+  updateYearFilters();
   renderAll();
 }
 
