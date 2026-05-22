@@ -1210,20 +1210,41 @@ function showWelcome() {
 }
 
 window.addEventListener('load', () => {
-  // Tenter de charger les données du dernier import
-  const saved = loadFromStorage();
-  if(saved && saved.rows && saved.rows.length > 0) {
-    // Données trouvées dans localStorage
-    recomputeDepenses(saved.rows);
-    const msg = saved.age > 0 ? `Données du ${saved.age}j — ` : 'Données récentes — ';
-    showStatus(`✓ ${msg}${saved.rows.length} lignes restaurées`);
-    document.getElementById('welcomeOverlay').style.display = 'none';
-  } else {
-    // Aucune donnée — montrer l'écran d'accueil après 300ms
-    renderAll();
-    updateYearFilters();
-    setTimeout(showWelcome, 300);
+  // Version check — vide le localStorage si données d'une ancienne version
+  const DASHBOARD_VERSION = 'v3';
+  const storedVersion = localStorage.getItem('activmedia_version');
+  if(storedVersion !== DASHBOARD_VERSION) {
+    clearStorage();
+    localStorage.setItem('activmedia_version', DASHBOARD_VERSION);
   }
+
+  // Attendre que Chart.js soit prêt avant de rendre
+  function initDashboard() {
+    if(typeof Chart === 'undefined') {
+      setTimeout(initDashboard, 100);
+      return;
+    }
+    const saved = loadFromStorage();
+    if(saved && saved.rows && saved.rows.length > 0) {
+      try {
+        recomputeDepenses(saved.rows);
+        const msg = saved.age > 0 ? `Données du ${saved.age}j — ` : 'Données récentes — ';
+        showStatus(`✓ ${msg}${saved.rows.length} lignes restaurées`);
+        document.getElementById('welcomeOverlay').style.display = 'none';
+      } catch(e) {
+        console.warn('Erreur restauration localStorage:', e);
+        clearStorage();
+        renderAll();
+        updateYearFilters();
+        setTimeout(showWelcome, 300);
+      }
+    } else {
+      renderAll();
+      updateYearFilters();
+      setTimeout(showWelcome, 300);
+    }
+  }
+  initDashboard();
 });
 </script>
 </body>
