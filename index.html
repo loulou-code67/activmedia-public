@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ActivMedia — Dashboard Dépenses</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;color:#1e293b;font-size:14px}
+/* --- HEADER --- */
+.header{background:#1e3a5f;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.header-brand{display:flex;align-items:center;gap:12px}
+.header-logo{width:36px;height:36px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px}
+.header h1{color:#fff;font-size:17px;font-weight:600}
+.header-sub{color:#93c5fd;font-size:12px;margin-top:1px}
+.header-right{display:flex;align-items:center;gap:10px}
+.btn-import{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:7px;font-size:13px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px}
+.btn-import:hover{background:rgba(255,255,255,.22)}
+.import-status{font-size:12px;color:#93c5fd;display:none}
+/* --- NAV --- */
+.nav{background:#fff;border-bottom:2px solid #e2e8f0;padding:0 24px;display:flex;gap:0;overflow-x:auto}
+.nav-tab{padding:13px 20px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.15s}
+.nav-tab:hover{color:#2563eb}
+.nav-tab.active{color:#2563eb;border-bottom-color:#2563eb;font-weight:600}
+/* --- FILTER --- */
+.filter-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 24px;display:flex;align-items:center;gap:8px}
+.filter-label{font-size:12px;color:#64748b;font-weight:500;margin-right:4px}
+.filter-btn{padding:5px 14px;border:1px solid #e2e8f0;border-radius:20px;font-size:12px;color:#64748b;background:#fff;cursor:pointer;transition:.15s}
+.filter-btn:hover{border-color:#2563eb;color:#2563eb}
+.filter-btn.active{background:#2563eb;color:#fff;border-color:#2563eb}
+/* --- MAIN --- */
+.main{padding:20px 24px;max-width:1400px}
+.page{display:none}
+.page.active{display:block}
+/* --- KPI --- */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi-card{background:#fff;border-radius:10px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-top:4px solid #2563eb}
+.kpi-card.c2{border-top-color:#f59e0b}
+.kpi-card.c3{border-top-color:#059669}
+.kpi-card.c4{border-top-color:#7c3aed}
+.kpi-card.c5{border-top-color:#ef4444}
+.kpi-label{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kpi-value{font-size:24px;font-weight:700;color:#1e293b;line-height:1.2}
+.kpi-sub{font-size:11px;color:#94a3b8;margin-top:3px}
+/* --- CHARTS --- */
+.charts-2col{display:grid;grid-template-columns:5fr 8fr;gap:16px;margin-bottom:16px}
+.chart-card{background:#fff;border-radius:10px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.chart-title{font-size:13px;font-weight:600;color:#1e293b;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #f1f5f9}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:#64748b}
+.leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+/* --- TABLE --- */
+.tbl-wrap{overflow-x:auto;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:#f8fafc;padding:9px 12px;text-align:left;font-weight:600;color:#475569;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid #e2e8f0;white-space:nowrap}
+tbody tr:hover{background:#f8fafc}
+tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:600}
+.b-haute{background:#fef2f2;color:#dc2626}
+.b-moyenne{background:#fff7ed;color:#ea580c}
+.b-basse{background:#f0fdf4;color:#16a34a}
+.b-facile{background:#eff6ff;color:#2563eb}
+.b-moyen{background:#faf5ff;color:#7c3aed}
+.b-difficile{background:#fef9c3;color:#854d0e}
+.b-technique{background:#f0fdf4;color:#065f46}
+.b-nouveau{background:#eff6ff;color:#2563eb}
+.evo-pos{color:#dc2626;font-weight:600}
+.evo-neg{color:#16a34a;font-weight:600}
+.evo-zero{color:#94a3b8}
+.section-title{font-size:13px;font-weight:600;color:#1e293b;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid #e2e8f0}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.charts-2col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<div class="header">
+  <div class="header-brand">
+    <div class="header-logo">AM</div>
+    <div>
+      <div class="header h1" style="color:#fff;font-size:17px;font-weight:600">ActivMedia</div>
+      <div class="header-sub">Dashboard Analyse des Dépenses</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="import-status" id="importStatus">✓ CSV importé</span>
+    <button class="btn-import" onclick="document.getElementById('csvInput').click()">
+      ↑ Importer CSV
+    </button>
+    <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="handleCSV(this)"/>
+  </div>
+</div>
+
+<!-- ========== NAV TABS ========== -->
+<div class="nav">
+  <div class="nav-tab active" onclick="switchTab('overview',this)">Vue d'ensemble</div>
+  <div class="nav-tab" onclick="switchTab('fournisseurs',this)">Fournisseurs</div>
+  <div class="nav-tab" onclick="switchTab('alternatives',this)">Alternatives</div>
+  <div class="nav-tab" onclick="switchTab('projections',this)">Projections</div>
+</div>
+
+<!-- ========== FILTER BAR ========== -->
+<div class="filter-bar">
+  <span class="filter-label">Année :</span>
+  <button class="filter-btn active" onclick="setYear('all',this)">Toutes</button>
+  <button class="filter-btn" onclick="setYear('2023',this)">2023</button>
+  <button class="filter-btn" onclick="setYear('2024',this)">2024</button>
+  <button class="filter-btn" onclick="setYear('2025',this)">2025</button>
+</div>
+
+<div class="main">
+
+<!-- ============================== PAGE 1 : VUE D'ENSEMBLE ============================== -->
+<div class="page active" id="page-overview">
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Total Dépenses</div><div class="kpi-value" id="kpi-total">99 421 €</div><div class="kpi-sub">Toutes années</div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-fourn">71</div><div class="kpi-sub">Fournisseurs uniques</div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Nb Factures</div><div class="kpi-value" id="kpi-fac">376</div><div class="kpi-sub">Documents traités</div></div>
+    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen</div><div class="kpi-value" id="kpi-moy">264 €</div><div class="kpi-sub">Par facture</div></div>
+  </div>
+  <div class="charts-2col">
+    <div class="chart-card">
+      <div class="chart-title">Dépenses par catégorie</div>
+      <div style="position:relative;height:220px"><canvas id="chartDonut" role="img" aria-label="Répartition des dépenses par catégorie"></canvas></div>
+      <div class="legend" id="legendDonut"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Dépenses mensuelles par catégorie</div>
+      <div style="position:relative;height:280px"><canvas id="chartMois" role="img" aria-label="Évolution mensuelle des dépenses par catégorie"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== PAGE 2 : FOURNISSEURS ============================== -->
+<div class="page" id="page-fournisseurs">
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Total Dépenses</div><div class="kpi-value" id="kpi-f-total">99 421 €</div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-f-fourn">71</div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Fournisseur Principal</div><div class="kpi-value" id="kpi-f-main" style="font-size:18px">LAB</div></div>
+    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen / Fournisseur</div><div class="kpi-value" id="kpi-f-moy">1 400 €</div></div>
+  </div>
+  <div class="chart-card" style="margin-bottom:16px">
+    <div class="chart-title">Top 10 fournisseurs par année (€)</div>
+    <div style="position:relative;height:320px"><canvas id="chartFourn" role="img" aria-label="Top 10 fournisseurs par année"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Évolution des dépenses fournisseurs — 2023 vs 2025</div>
+    <div class="tbl-wrap">
+      <table id="tableFournEvo">
+        <thead><tr><th>Fournisseur</th><th>2023</th><th>2025</th><th>Évolution</th></tr></thead>
+        <tbody id="tbodyFournEvo"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== PAGE 3 : ALTERNATIVES ============================== -->
+<div class="page" id="page-alternatives">
+  <div class="kpi-grid">
+    <div class="kpi-card c5"><div class="kpi-label">Priorités Hautes</div><div class="kpi-value" id="kpi-a-haute">3</div><div class="kpi-sub">Fournisseurs à traiter en premier</div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Postes à Optimiser</div><div class="kpi-value" id="kpi-a-postes">10</div><div class="kpi-sub">Alternatives identifiées</div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Économie Maximale</div><div class="kpi-value" id="kpi-a-max">5 861 €</div><div class="kpi-sub" id="kpi-a-maxsub">Scénario optimal</div></div>
+    <div class="kpi-card"><div class="kpi-label">Économie Estimée / An</div><div class="kpi-value" id="kpi-a-est">1 858 €</div><div class="kpi-sub">Alternatives raisonnables</div></div>
+  </div>
+  <div class="chart-card" style="margin-bottom:16px">
+    <div class="chart-title">Économies potentielles par fournisseur (€)</div>
+    <div style="position:relative;height:200px"><canvas id="chartAlt" role="img" aria-label="Économies potentielles par alternative"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Tableau des alternatives — Détail</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Fournisseur</th><th>Catégorie</th><th>Actuel</th><th>Alternative proposée</th><th>Coût alt.</th><th>Économie</th><th>%</th><th>Faisabilité</th><th>Priorité</th></tr></thead>
+        <tbody id="tbodyAlt"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== PAGE 4 : PROJECTIONS ============================== -->
+<div class="page" id="page-projections">
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">CA Réel (dernière année)</div><div class="kpi-value" id="kpi-p-ca">231 833 €</div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Résultat Net Réel</div><div class="kpi-value" id="kpi-p-res">60 865 €</div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Résultat avec Alternatives</div><div class="kpi-value" id="kpi-p-alt">62 723 €</div><div class="kpi-sub" id="kpi-p-eco">+1 858 € avec optimisations</div></div>
+    <div class="kpi-card c4"><div class="kpi-label">CA Projection 2026</div><div class="kpi-value" id="kpi-p-proj">232–243 K€</div><div class="kpi-sub">Conservateur / Optimiste</div></div>
+  </div>
+  <div class="charts-2col">
+    <div class="chart-card">
+      <div class="chart-title">CA & Résultat net (2022–2026)</div>
+      <div style="position:relative;height:300px"><canvas id="chartProj" role="img" aria-label="Évolution CA et résultat net 2022-2026"></canvas></div>
+      <div class="legend" style="margin-top:10px">
+        <div class="leg"><div class="leg-sq" style="background:#2563eb"></div>CA</div>
+        <div class="leg"><div class="leg-sq" style="background:#059669"></div>Résultat net</div>
+        <div class="leg"><div class="leg-sq" style="background:#f59e0b"></div>Résultat avec alternatives</div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Taux de rentabilité (résultat / CA)</div>
+      <div style="position:relative;height:300px"><canvas id="chartRenta" role="img" aria-label="Taux de rentabilité par année"></canvas></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// =====================================================================
+// DONNÉES EMBARQUÉES (générées depuis depenses_clean_final.csv)
+// =====================================================================
+const FMT = (v) => new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v);
+const FMT2 = (v) => new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(v);
+
+const CAT_COLORS = {
+  prestations:'#2563eb', materiel_achats:'#f59e0b', travaux:'#ef4444',
+  logiciels_abonnements:'#7c3aed', energie:'#059669', telecom:'#0891b2',
+  restauration:'#ea580c', transport:'#65a30d', assurance:'#db2777'
+};
+const CAT_LABELS = {
+  prestations:'Prestations', materiel_achats:'Matériel & Achats', travaux:'Travaux',
+  logiciels_abonnements:'Logiciels/Abonnements', energie:'Énergie', telecom:'Télécom',
+  restauration:'Restauration', transport:'Transport', assurance:'Assurance'
+};
+
+const KPI = {
+  all:  {total:99421, fourn:71, fac:376, moy:264},
+  2023: {total:32539, fourn:35, fac:118, moy:276},
+  2024: {total:27914, fourn:27, fac:150, moy:186},
+  2025: {total:38968, fourn:40, fac:108, moy:361}
+};
+
+const CATS = {
+  all: [
+    {k:'prestations',v:38575},{k:'materiel_achats',v:21362},{k:'travaux',v:17087},
+    {k:'logiciels_abonnements',v:13069},{k:'energie',v:4604},{k:'telecom',v:3862},
+    {k:'restauration',v:402},{k:'transport',v:353},{k:'assurance',v:107}
+  ],
+  2023:[
+    {k:'prestations',v:12469},{k:'materiel_achats',v:7562},{k:'logiciels_abonnements',v:8391},
+    {k:'travaux',v:2453},{k:'telecom',v:954},{k:'energie',v:558},
+    {k:'restauration',v:102},{k:'assurance',v:52}
+  ],
+  2024:[
+    {k:'travaux',v:14635},{k:'materiel_achats',v:5233},{k:'energie',v:3423},
+    {k:'prestations',v:2205},{k:'logiciels_abonnements',v:1516},
+    {k:'telecom',v:824},{k:'restauration',v:75},{k:'transport',v:3}
+  ],
+  2025:[
+    {k:'prestations',v:23901},{k:'materiel_achats',v:8567},{k:'logiciels_abonnements',v:3163},
+    {k:'telecom',v:2084},{k:'energie',v:623},{k:'transport',v:350},
+    {k:'restauration',v:225},{k:'assurance',v:55}
+  ]
+};
+
+// Données mensuelles brutes {m, c, v} -> pivotées au render
+const MOIS_RAW = [
+  {m:"2023-01",c:"energie",v:74},{m:"2023-01",c:"logiciels_abonnements",v:52},{m:"2023-01",c:"materiel_achats",v:292},{m:"2023-01",c:"prestations",v:420},{m:"2023-01",c:"restauration",v:40},{m:"2023-01",c:"telecom",v:73},
+  {m:"2023-03",c:"energie",v:109},{m:"2023-03",c:"logiciels_abonnements",v:27},{m:"2023-03",c:"materiel_achats",v:718},{m:"2023-03",c:"prestations",v:1130},{m:"2023-03",c:"telecom",v:73},
+  {m:"2023-04",c:"energie",v:194},{m:"2023-04",c:"materiel_achats",v:1512},{m:"2023-04",c:"telecom",v:73},
+  {m:"2023-05",c:"energie",v:84},{m:"2023-05",c:"logiciels_abonnements",v:92},{m:"2023-05",c:"materiel_achats",v:479},{m:"2023-05",c:"prestations",v:1355},{m:"2023-05",c:"restauration",v:26},{m:"2023-05",c:"telecom",v:73},
+  {m:"2023-06",c:"energie",v:98},{m:"2023-06",c:"logiciels_abonnements",v:64},{m:"2023-06",c:"prestations",v:670},{m:"2023-06",c:"telecom",v:77},
+  {m:"2023-07",c:"logiciels_abonnements",v:29},{m:"2023-07",c:"materiel_achats",v:3135},{m:"2023-07",c:"prestations",v:735},{m:"2023-07",c:"telecom",v:73},
+  {m:"2023-08",c:"logiciels_abonnements",v:652},{m:"2023-08",c:"materiel_achats",v:105},{m:"2023-08",c:"restauration",v:35},{m:"2023-08",c:"telecom",v:123},{m:"2023-08",c:"travaux",v:2127},
+  {m:"2023-09",c:"logiciels_abonnements",v:29},{m:"2023-09",c:"prestations",v:2260},{m:"2023-09",c:"telecom",v:33},{m:"2023-09",c:"travaux",v:76},
+  {m:"2023-10",c:"logiciels_abonnements",v:8013},{m:"2023-10",c:"materiel_achats",v:210},{m:"2023-10",c:"prestations",v:2628},
+  {m:"2023-11",c:"assurance",v:52},{m:"2023-11",c:"logiciels_abonnements",v:35},{m:"2023-11",c:"materiel_achats",v:765},{m:"2023-11",c:"prestations",v:2090},{m:"2023-11",c:"telecom",v:236},{m:"2023-11",c:"travaux",v:250},
+  {m:"2023-12",c:"logiciels_abonnements",v:1},{m:"2023-12",c:"materiel_achats",v:160},{m:"2023-12",c:"prestations",v:1770},{m:"2023-12",c:"telecom",v:40},
+  {m:"2024-01",c:"energie",v:1043},{m:"2024-01",c:"logiciels_abonnements",v:24},{m:"2024-01",c:"materiel_achats",v:1192},{m:"2024-01",c:"prestations",v:1078},{m:"2024-01",c:"restauration",v:35},{m:"2024-01",c:"telecom",v:73},
+  {m:"2024-02",c:"energie",v:204},{m:"2024-02",c:"logiciels_abonnements",v:158},{m:"2024-02",c:"materiel_achats",v:3369},{m:"2024-02",c:"telecom",v:73},
+  {m:"2024-11",c:"energie",v:191},{m:"2024-11",c:"logiciels_abonnements",v:45},{m:"2024-11",c:"materiel_achats",v:64},{m:"2024-11",c:"telecom",v:80},{m:"2024-11",c:"travaux",v:4422},
+  {m:"2024-12",c:"energie",v:192},{m:"2024-12",c:"logiciels_abonnements",v:54},{m:"2024-12",c:"telecom",v:80},{m:"2024-12",c:"travaux",v:10213},
+  {m:"2025-01",c:"energie",v:106},{m:"2025-01",c:"logiciels_abonnements",v:45},{m:"2025-01",c:"materiel_achats",v:256},{m:"2025-01",c:"prestations",v:490},{m:"2025-01",c:"telecom",v:80},
+  {m:"2025-02",c:"logiciels_abonnements",v:44},{m:"2025-02",c:"materiel_achats",v:3449},{m:"2025-02",c:"prestations",v:1820},{m:"2025-02",c:"restauration",v:225},{m:"2025-02",c:"telecom",v:80},
+  {m:"2025-03",c:"energie",v:177},{m:"2025-03",c:"logiciels_abonnements",v:164},{m:"2025-03",c:"prestations",v:5773},{m:"2025-03",c:"telecom",v:80},
+  {m:"2025-06",c:"energie",v:85},{m:"2025-06",c:"logiciels_abonnements",v:60},{m:"2025-06",c:"materiel_achats",v:1950},{m:"2025-06",c:"prestations",v:2623},{m:"2025-06",c:"telecom",v:83},
+  {m:"2025-07",c:"energie",v:88},{m:"2025-07",c:"materiel_achats",v:83},{m:"2025-07",c:"prestations",v:810},{m:"2025-07",c:"telecom",v:101},
+  {m:"2025-09",c:"materiel_achats",v:654},{m:"2025-09",c:"prestations",v:4980},{m:"2025-09",c:"telecom",v:501},
+  {m:"2025-10",c:"logiciels_abonnements",v:39},{m:"2025-10",c:"prestations",v:1313},{m:"2025-10",c:"telecom",v:700},
+  {m:"2025-11",c:"assurance",v:55},{m:"2025-11",c:"logiciels_abonnements",v:365},{m:"2025-11",c:"materiel_achats",v:1200},{m:"2025-11",c:"prestations",v:5320},{m:"2025-11",c:"telecom",v:130},
+  {m:"2025-12",c:"logiciels_abonnements",v:2140},{m:"2025-12",c:"prestations",v:320},{m:"2025-12",c:"telecom",v:130},{m:"2025-12",c:"transport",v:350}
+];
+
+const FOURN_YEAR = [
+  {f:"LAB","2023":2127,"2024":10213,"2025":0},
+  {f:"APPLE","2023":0,"2024":3997,"2025":3449},
+  {f:"STUDIO87","2023":5813,"2024":735,"2025":0},
+  {f:"GOOGLE","2023":5818,"2024":0,"2025":36},
+  {f:"AMAZON","2023":4920,"2024":63,"2025":700},
+  {f:"PE CONSULTANT SEO","2023":150,"2024":0,"2025":5150},
+  {f:"EDF","2023":558,"2024":3423,"2025":623},
+  {f:"RT RENOVATION","2023":0,"2024":4422,"2025":0},
+  {f:"PEPITE","2023":0,"2024":0,"2025":4277},
+  {f:"MAAVA CONSULTING","2023":0,"2024":0,"2025":3684}
+];
+
+const FOURN_EVO = [
+  {f:"AMAZON",m23:4920,m25:700,evo:-86},{f:"STUDIO87",m23:5813,m25:0,evo:-100},
+  {f:"GOOGLE",m23:5818,m25:36,evo:-99},{f:"FNAC DIRECT",m23:639,m25:220,evo:-66},
+  {f:"FREE",m23:718,m25:480,evo:-33},{f:"AIRBNB",m23:865,m25:795,evo:-8},
+  {f:"COM INTO BLOSSOM",m23:1225,m25:980,evo:-20},{f:"ZOOM",m23:272,m25:187,evo:-31},
+  {f:"EDF",m23:558,m25:623,evo:12},{f:"JMBFR",m23:131,m25:443,evo:239},
+  {f:"PE CONSULTANT SEO",m23:150,m25:5150,evo:3233},
+  {f:"APPLE",m23:0,m25:3449,evo:null},{f:"PEPITE",m23:0,m25:4277,evo:null},
+  {f:"MAAVA CONSULTING",m23:0,m25:3684,evo:null},{f:"JULIAN GUILLEN",m23:0,m25:3465,evo:null},
+  {f:"LAB",m23:2127,m25:0,evo:-100}
+];
+
+const ALTERNATIVES = [
+  {f:"APPLE",cat:"Matériel",act:7361,alt:"MacBook reconditionné (Back Market)",altc:2700,eco:4661,pct:63,fais:"Facile",prio:"Haute"},
+  {f:"APPLE",cat:"Matériel",act:7361,alt:"PC portable Asus/Lenovo (Windows)",altc:1500,eco:5861,pct:80,fais:"Moyen",prio:"Haute"},
+  {f:"EDF",cat:"Énergie",act:2555,alt:"Changement fournisseur (Engie/Total)",altc:1900,eco:655,pct:26,fais:"Facile",prio:"Haute"},
+  {f:"ZOOM",cat:"Logiciels",act:261,alt:"Google Meet (inclus Google Workspace)",altc:0,eco:261,pct:100,fais:"Facile",prio:"Haute"},
+  {f:"ZOOM",cat:"Logiciels",act:261,alt:"Jitsi (open source gratuit)",altc:0,eco:261,pct:100,fais:"Moyen",prio:"Haute"},
+  {f:"ADOBE",cat:"Logiciels",act:315,alt:"Canva Pro",altc:156,eco:159,pct:50,fais:"Facile",prio:"Moyenne"},
+  {f:"ADOBE",cat:"Logiciels",act:315,alt:"Affinity Suite (achat unique)",altc:170,eco:145,pct:46,fais:"Facile",prio:"Moyenne"},
+  {f:"A WORLD FOR US",cat:"Logiciels",act:2159,alt:"Recherche fournisseur mutualisé",altc:800,eco:1359,pct:63,fais:"Difficile",prio:"Basse"},
+  {f:"MAKE",cat:"Logiciels",act:108,alt:"n8n auto-hébergé (VPS ~10€/mois)",altc:120,eco:0,pct:0,fais:"Technique",prio:"Basse"},
+  {f:"OPENAI",cat:"Logiciels",act:50,alt:"Inclure dans budget Make / n8n",altc:0,eco:50,pct:100,fais:"Facile",prio:"Basse"}
+];
+
+const PROJECTIONS = [
+  {label:"2022",CA:149828,res:2822,alt:4680,renta:1.9,type:"reel"},
+  {label:"2023",CA:165963,res:2822,alt:4680,renta:1.7,type:"reel"},
+  {label:"2024",CA:260143,res:38467,alt:40325,renta:14.8,type:"reel"},
+  {label:"2025",CA:231833,res:60865,alt:62723,renta:26.3,type:"reel"},
+  {label:"2026 (cons.)",CA:231833,res:60833,alt:62691,renta:26.2,type:"proj"},
+  {label:"2026 (opt.)",CA:243425,res:72425,alt:74283,renta:29.8,type:"proj"}
+];
+
+// =====================================================================
+// STATE
+// =====================================================================
+let activeYear = 'all';
+const charts = {};
+const MOIS_LABELS = {
+  '01':'Jan','02':'Fév','03':'Mar','04':'Avr','05':'Mai','06':'Jun',
+  '07':'Jul','08':'Aoû','09':'Sep','10':'Oct','11':'Nov','12':'Déc'
+};
+
+// =====================================================================
+// NAVIGATION
+// =====================================================================
+function switchTab(tab, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  el.classList.add('active');
+  setTimeout(()=>renderAll(), 50);
+}
+
+function setYear(y, el) {
+  activeYear = y;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+// =====================================================================
+// HELPERS
+// =====================================================================
+function pivotMois(raw, year) {
+  const filtered = year==='all' ? raw : raw.filter(r=>r.m.startsWith(year));
+  const map = {};
+  filtered.forEach(({m,c,v})=>{
+    if(!map[m]) map[m]={m};
+    map[m][c]=(map[m][c]||0)+v;
+  });
+  return Object.values(map).sort((a,b)=>a.m.localeCompare(b.m)).map(r=>{
+    const [yr,mo]=r.m.split('-');
+    return {...r, label:`${MOIS_LABELS[mo]} ${yr.slice(2)}`};
+  });
+}
+
+function destroyChart(id) {
+  if(charts[id]){ charts[id].destroy(); delete charts[id]; }
+}
+
+// =====================================================================
+// RENDER ALL
+// =====================================================================
+function renderAll() {
+  const yr = activeYear;
+  updateKPIs(yr);
+  renderDonut(yr);
+  renderMois(yr);
+  renderFournKPIs(yr);
+  renderFournChart(yr);
+  renderFournEvoTable();
+  renderAltTable();
+  renderAltChart();
+  renderProjections();
+}
+
+// =====================================================================
+// PAGE 1 — VUE D'ENSEMBLE
+// =====================================================================
+function updateKPIs(yr) {
+  const k = KPI[yr] || KPI.all;
+  document.getElementById('kpi-total').textContent = FMT(k.total);
+  document.getElementById('kpi-fourn').textContent = FMT2(k.fourn);
+  document.getElementById('kpi-fac').textContent = FMT2(k.fac);
+  document.getElementById('kpi-moy').textContent = FMT(k.moy);
+}
+
+function renderDonut(yr) {
+  destroyChart('chartDonut');
+  const cats = CATS[yr] || CATS.all;
+  const total = cats.reduce((s,c)=>s+c.v,0);
+  const labels = cats.map(c=>CAT_LABELS[c.k]||c.k);
+  const data = cats.map(c=>c.v);
+  const colors = cats.map(c=>CAT_COLORS[c.k]||'#94a3b8');
+  charts.chartDonut = new Chart(document.getElementById('chartDonut'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${FMT(ctx.parsed)} (${Math.round(ctx.parsed/total*100)}%)`}}
+      }
+    }
+  });
+  // Custom legend
+  const leg = document.getElementById('legendDonut');
+  leg.innerHTML = cats.map(c=>`<div class="leg"><div class="leg-sq" style="background:${CAT_COLORS[c.k]||'#94a3b8'}"></div>${CAT_LABELS[c.k]||c.k}: <strong style="color:#1e293b;margin-left:3px">${FMT(c.v)}</strong></div>`).join('');
+}
+
+function renderMois(yr) {
+  destroyChart('chartMois');
+  const pivoted = pivotMois(MOIS_RAW, yr);
+  const labels = pivoted.map(r=>r.label);
+  const catKeys = Object.keys(CAT_COLORS);
+  const datasets = catKeys.filter(k=>pivoted.some(r=>r[k])).map(k=>({
+    label:CAT_LABELS[k]||k,
+    data:pivoted.map(r=>r[k]||0),
+    backgroundColor:CAT_COLORS[k],
+    borderColor:'#fff',
+    borderWidth:0.5,
+    stack:'s1'
+  }));
+  charts.chartMois = new Chart(document.getElementById('chartMois'),{
+    type:'bar',
+    data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{stacked:true,ticks:{maxRotation:45,font:{size:10}},grid:{display:false}},
+        y:{stacked:true,ticks:{callback:v=>v>=1000?`${v/1000}k€`:`${v}€`,font:{size:10}},grid:{color:'#f1f5f9'}}
+      },
+      plugins:{
+        legend:{display:false},
+        tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>ctx.parsed.y>0?`${ctx.dataset.label}: ${FMT(ctx.parsed.y)}`:null,afterTitle:items=>`Total: ${FMT(items.reduce((s,i)=>s+i.parsed.y,0))}`}}
+      }
+    }
+  });
+}
+
+// =====================================================================
+// PAGE 2 — FOURNISSEURS
+// =====================================================================
+function renderFournKPIs(yr) {
+  const k = KPI[yr] || KPI.all;
+  document.getElementById('kpi-f-total').textContent = FMT(k.total);
+  document.getElementById('kpi-f-fourn').textContent = FMT2(k.fourn);
+  const mFourn = k.fourn > 0 ? Math.round(k.total / k.fourn) : 0;
+  document.getElementById('kpi-f-moy').textContent = FMT(mFourn);
+  // Fournisseur principal dépend de l'année
+  const yr2 = yr === 'all' ? null : yr;
+  const top = FOURN_YEAR.map(r=>{
+    const v = yr2 ? (r[yr2]||0) : ((r['2023']||0)+(r['2024']||0)+(r['2025']||0));
+    return {f:r.f, v};
+  }).sort((a,b)=>b.v-a.v)[0];
+  document.getElementById('kpi-f-main').textContent = top && top.v > 0 ? top.f : 'N/A';
+}
+
+function renderFournChart(yr) {
+  destroyChart('chartFourn');
+  const yr2 = yr === 'all' ? null : yr;
+  const sorted = [...FOURN_YEAR].map(r=>{
+    const t = yr2?(r[yr2]||0):((r['2023']||0)+(r['2024']||0)+(r['2025']||0));
+    return {...r, total:t};
+  }).sort((a,b)=>b.total-a.total).slice(0,10).reverse();
+  const labels = sorted.map(r=>r.f);
+  const datasets = yr2 ? [
+    {label:yr2, data:sorted.map(r=>r[yr2]||0), backgroundColor:'#2563eb', borderRadius:4}
+  ] : [
+    {label:'2023', data:sorted.map(r=>r['2023']||0), backgroundColor:'#60a5fa', borderRadius:2},
+    {label:'2024', data:sorted.map(r=>r['2024']||0), backgroundColor:'#2563eb', borderRadius:2},
+    {label:'2025', data:sorted.map(r=>r['2025']||0), backgroundColor:'#1e3a5f', borderRadius:2}
+  ];
+  charts.chartFourn = new Chart(document.getElementById('chartFourn'),{
+    type:'bar',
+    data:{labels,datasets},
+    options:{
+      indexAxis:'y',
+      responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{ticks:{callback:v=>`${Math.round(v/1000)}k€`,font:{size:10}},grid:{color:'#f1f5f9'}},
+        y:{ticks:{font:{size:11}},grid:{display:false}}
+      },
+      plugins:{
+        legend:{display:yr==='all',position:'top',labels:{font:{size:11},boxWidth:12}},
+        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${FMT(ctx.parsed.x)}`}}
+      }
+    }
+  });
+}
+
+function renderFournEvoTable() {
+  const tbody = document.getElementById('tbodyFournEvo');
+  tbody.innerHTML = FOURN_EVO.map(r=>{
+    let evoBadge;
+    if(r.evo===null) evoBadge='<span class="badge b-nouveau">Nouveau</span>';
+    else if(r.evo>0) evoBadge=`<span class="evo-pos">+${r.evo}%</span>`;
+    else if(r.evo<0) evoBadge=`<span class="evo-neg">${r.evo}%</span>`;
+    else evoBadge=`<span class="evo-zero">=</span>`;
+    return `<tr><td><strong>${r.f}</strong></td><td>${r.m23>0?FMT(r.m23):'—'}</td><td>${r.m25>0?FMT(r.m25):'—'}</td><td>${evoBadge}</td></tr>`;
+  }).join('');
+}
+
+// =====================================================================
+// PAGE 3 — ALTERNATIVES
+// =====================================================================
+function renderAltTable() {
+  document.getElementById('tbodyAlt').innerHTML = ALTERNATIVES.map(r=>{
+    const bc = r.prio.toLowerCase();
+    const fc = r.fais.toLowerCase();
+    return `<tr>
+      <td><strong>${r.f}</strong></td>
+      <td>${r.cat}</td>
+      <td style="font-weight:600">${FMT(r.act)}</td>
+      <td>${r.alt}</td>
+      <td>${r.altc>0?FMT(r.altc):'Gratuit'}</td>
+      <td style="color:#16a34a;font-weight:600">${r.eco>0?FMT(r.eco):'—'}</td>
+      <td><strong>${r.pct}%</strong></td>
+      <td><span class="badge b-${fc}">${r.fais}</span></td>
+      <td><span class="badge b-${bc}">${r.prio}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAltChart() {
+  destroyChart('chartAlt');
+  const data = ALTERNATIVES.filter(r=>r.eco>0);
+  charts.chartAlt = new Chart(document.getElementById('chartAlt'),{
+    type:'bar',
+    data:{
+      labels:data.map(r=>`${r.f} — ${r.alt.substring(0,30)}`),
+      datasets:[{
+        label:'Économie estimée (€)',
+        data:data.map(r=>r.eco),
+        backgroundColor:data.map(r=>r.prio==='Haute'?'#059669':r.prio==='Moyenne'?'#f59e0b':'#94a3b8'),
+        borderRadius:4
+      }]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{ticks:{callback:v=>`${v}€`,font:{size:10}},grid:{color:'#f1f5f9'}},
+        y:{ticks:{font:{size:10}},grid:{display:false}}
+      },
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>`Économie: ${FMT(ctx.parsed.x)}`}}
+      }
+    }
+  });
+}
+
+// =====================================================================
+// PAGE 4 — PROJECTIONS
+// =====================================================================
+function renderProjections() {
+  destroyChart('chartProj');
+  destroyChart('chartRenta');
+  // Mise à jour KPIs au chargement initial
+  const reels = PROJECTIONS.filter(r=>r.type==='reel');
+  const last = reels[reels.length-1];
+  const projs = PROJECTIONS.filter(r=>r.type==='proj');
+  if(last){
+    document.getElementById('kpi-p-ca').textContent = FMT(last.CA);
+    document.getElementById('kpi-p-res').textContent = FMT(last.res);
+    document.getElementById('kpi-p-alt').textContent = FMT(last.alt);
+    document.getElementById('kpi-p-eco').textContent = `+${FMT(last.alt-last.res)} avec optimisations`;
+  }
+  if(projs.length){
+    const min=Math.min(...projs.map(r=>r.CA)), max=Math.max(...projs.map(r=>r.CA));
+    document.getElementById('kpi-p-proj').textContent = min===max ? FMT(min) : `${Math.round(min/1000)}–${Math.round(max/1000)} K€`;
+  }
+  const labels = PROJECTIONS.map(r=>r.label);
+  const colors = PROJECTIONS.map(r=>r.type==='proj'?'rgba(37,99,235,0.4)':'#2563eb');
+  charts.chartProj = new Chart(document.getElementById('chartProj'),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {type:'bar',label:'CA',data:PROJECTIONS.map(r=>r.CA),backgroundColor:colors,borderRadius:4,order:2},
+        {type:'line',label:'Résultat net',data:PROJECTIONS.map(r=>r.res),borderColor:'#059669',backgroundColor:'rgba(5,150,105,.1)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#059669',borderWidth:2,order:1},
+        {type:'line',label:'Résultat avec alternatives',data:PROJECTIONS.map(r=>r.alt),borderColor:'#f59e0b',backgroundColor:'transparent',borderDash:[5,3],tension:.3,pointRadius:4,pointBackgroundColor:'#f59e0b',borderWidth:2,order:1}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:11}}},
+        y:{ticks:{callback:v=>`${Math.round(v/1000)}k€`,font:{size:10}},grid:{color:'#f1f5f9'}}
+      },
+      plugins:{
+        legend:{display:false},
+        tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>`${ctx.dataset.label}: ${FMT(ctx.parsed.y)}`}}
+      }
+    }
+  });
+  charts.chartRenta = new Chart(document.getElementById('chartRenta'),{
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Taux de rentabilité (%)',
+        data:PROJECTIONS.map(r=>r.renta),
+        borderColor:'#2563eb',
+        backgroundColor:'rgba(37,99,235,.08)',
+        fill:true,tension:.4,
+        pointRadius:6,pointBackgroundColor:PROJECTIONS.map(r=>r.type==='proj'?'#f59e0b':'#2563eb'),
+        pointBorderColor:'#fff',pointBorderWidth:2,borderWidth:2,
+        segment:{borderDash:ctx=>ctx.p1DataIndex>=4?[6,3]:undefined}
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:11}}},
+        y:{ticks:{callback:v=>`${v}%`,font:{size:10}},grid:{color:'#f1f5f9'},min:0}
+      },
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>`Rentabilité: ${ctx.parsed.y}%`}}
+      }
+    }
+  });
+}
+
+// =====================================================================
+// CSV IMPORT — AUTO-DÉTECTION DU TYPE DE FICHIER
+// Les 3 CSV du projet sont supportés :
+//   depenses_clean_final.csv  → pages 1 & 2
+//   table_alternatives.csv    → page 3
+//   table_projection.csv      → page 4
+// =====================================================================
+function handleCSV(input) {
+  const file = input.files[0];
+  if(!file) return;
+  Papa.parse(file,{
+    header:true, dynamicTyping:true, skipEmptyLines:true,
+    complete:function(res){
+      const rows = res.data.filter(r=>Object.keys(r).some(k=>r[k]!==null));
+      if(!rows.length){ showStatus('❌ Fichier vide ou illisible.', true); return; }
+      const cols = Object.keys(rows[0]);
+
+      // Détection automatique par colonnes
+      if(cols.includes('montant_ttc') && cols.includes('fournisseur')) {
+        const depenses = rows.filter(r=>r.montant_ttc>0 && r.est_depense!==false);
+        if(!depenses.length){ showStatus('❌ Aucune dépense valide trouvée.', true); return; }
+        recomputeDepenses(depenses);
+        showStatus(`✓ Dépenses : ${depenses.length} lignes importées`);
+
+      } else if(cols.includes('fournisseur_actuel') && cols.includes('alternative_proposee')) {
+        recomputeAlternatives(rows);
+        showStatus(`✓ Alternatives : ${rows.length} lignes importées`);
+
+      } else if(cols.includes('resultat_net') && cols.includes('CA')) {
+        recomputeProjections(rows);
+        showStatus(`✓ Projections : ${rows.length} lignes importées`);
+
+      } else {
+        showStatus('❌ Format CSV non reconnu. Attendu : depenses, alternatives ou projections.', true);
+      }
+    },
+    error:()=>showStatus('❌ Erreur lecture CSV.', true)
+  });
+  input.value='';
+}
+
+function showStatus(msg, isErr=false) {
+  const el = document.getElementById('importStatus');
+  el.style.display = 'inline';
+  el.style.color = isErr ? '#fca5a5' : '#93c5fd';
+  el.textContent = msg;
+  setTimeout(()=>el.style.display='none', 5000);
+}
+
+// ─── RECALCUL DEPUIS depenses_clean_final.csv ────────────────────────
+function recomputeDepenses(rows) {
+  const allYrs = [...new Set(rows.map(r=>String(r.annee)).filter(Boolean))].sort();
+
+  // KPIs globaux + par année
+  const total = rows.reduce((s,r)=>s+(r.montant_ttc||0),0);
+  const fournSet = new Set(rows.map(r=>r.fournisseur).filter(Boolean));
+  KPI.all = {total:Math.round(total), fourn:fournSet.size, fac:rows.length, moy:Math.round(total/rows.length)||0};
+  allYrs.forEach(yr=>{
+    const sub = rows.filter(r=>String(r.annee)===yr);
+    const t = sub.reduce((s,r)=>s+(r.montant_ttc||0),0);
+    KPI[yr] = {total:Math.round(t), fourn:new Set(sub.map(r=>r.fournisseur).filter(Boolean)).size, fac:sub.length, moy:Math.round(t/sub.length)||0};
+  });
+
+  // Catégories
+  ['all',...allYrs].forEach(yr=>{
+    const sub = yr==='all' ? rows : rows.filter(r=>String(r.annee)===yr);
+    const acc={};
+    sub.forEach(r=>{ const k=r.categorie_depense||'autre'; acc[k]=(acc[k]||0)+(r.montant_ttc||0); });
+    CATS[yr] = Object.entries(acc).map(([k,v])=>({k,v:Math.round(v)})).sort((a,b)=>b.v-a.v);
+  });
+
+  // Données mensuelles
+  MOIS_RAW.length=0;
+  rows.forEach(r=>{
+    if(!r.date_document) return;
+    const d=new Date(r.date_document);
+    if(isNaN(d)) return;
+    const m=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    MOIS_RAW.push({m, c:r.categorie_depense||'autre', v:r.montant_ttc||0});
+  });
+
+  // Top 10 fournisseurs par année (dynamique selon les années présentes)
+  const fournAcc={};
+  rows.forEach(r=>{
+    const f=r.fournisseur; if(!f) return;
+    const yr=String(r.annee);
+    if(!fournAcc[f]) fournAcc[f]={};
+    fournAcc[f][yr]=(fournAcc[f][yr]||0)+(r.montant_ttc||0);
+  });
+  const newFournYear = Object.entries(fournAcc).map(([f,yrs])=>{
+    const obj={f};
+    let tot=0;
+    Object.entries(yrs).forEach(([yr,v])=>{ obj[yr]=Math.round(v); tot+=v; });
+    obj.total=Math.round(tot);
+    return obj;
+  }).sort((a,b)=>b.total-a.total).slice(0,10);
+  FOURN_YEAR.length=0;
+  newFournYear.forEach(r=>FOURN_YEAR.push(r));
+
+  // Évolution : compare première vs dernière année disponible
+  const yr1=allYrs[0], yr2=allYrs[allYrs.length-1];
+  // Mettre à jour le titre du tableau
+  const th = document.querySelector('#tableFournEvo thead tr');
+  if(th) th.innerHTML=`<th>Fournisseur</th><th>${yr1}</th><th>${yr2}</th><th>Évolution</th>`;
+  const evoAcc={};
+  rows.filter(r=>String(r.annee)===yr1||String(r.annee)===yr2).forEach(r=>{
+    const f=r.fournisseur; if(!f) return;
+    if(!evoAcc[f]) evoAcc[f]={m1:0,m2:0};
+    if(String(r.annee)===yr1) evoAcc[f].m1+=(r.montant_ttc||0);
+    if(String(r.annee)===yr2) evoAcc[f].m2+=(r.montant_ttc||0);
+  });
+  const newEvo = Object.entries(evoAcc)
+    .filter(([,d])=>d.m1>0||d.m2>0)
+    .map(([f,d])=>{
+      const m23=Math.round(d.m1), m25=Math.round(d.m2);
+      const evo = m23>0 ? Math.round((m25-m23)/m23*100) : null;
+      return {f, m23, m25, evo};
+    }).sort((a,b)=>Math.max(b.m23,b.m25)-Math.max(a.m23,a.m25));
+  FOURN_EVO.length=0;
+  newEvo.forEach(r=>FOURN_EVO.push(r));
+
+  renderAll();
+}
+
+// ─── RECALCUL DEPUIS table_alternatives.csv ──────────────────────────
+function recomputeAlternatives(rows) {
+  ALTERNATIVES.length=0;
+  rows.forEach(r=>{
+    ALTERNATIVES.push({
+      f: r.fournisseur_actuel||'',
+      cat: r.categorie||'',
+      act: r.depense_actuelle_eur||0,
+      alt: r.alternative_proposee||'',
+      altc: r.cout_alternatif_eur||0,
+      eco: r.economie_estimee_eur||0,
+      pct: r.economie_pct||0,
+      fais: r.faisabilite||'',
+      prio: r.priorite||''
+    });
+  });
+  // Mise à jour KPIs alternatives
+  const hautes = ALTERNATIVES.filter(r=>r.prio==='Haute').length;
+  const maxEco = Math.max(...ALTERNATIVES.map(r=>r.eco),0);
+  const maxItem = ALTERNATIVES.find(r=>r.eco===maxEco);
+  const totalEco = ALTERNATIVES.reduce((s,r)=>s+r.eco,0);
+  document.getElementById('kpi-a-haute').textContent = hautes;
+  document.getElementById('kpi-a-postes').textContent = ALTERNATIVES.length;
+  document.getElementById('kpi-a-max').textContent = FMT(maxEco);
+  document.getElementById('kpi-a-maxsub').textContent = maxItem ? `${maxItem.f} → ${maxItem.alt.substring(0,25)}` : '';
+  document.getElementById('kpi-a-est').textContent = FMT(Math.round(totalEco*0.32));
+  renderAltTable();
+  renderAltChart();
+}
+
+// ─── RECALCUL DEPUIS table_projection.csv ────────────────────────────
+function recomputeProjections(rows) {
+  PROJECTIONS.length=0;
+  rows.forEach(r=>{
+    const isProj = r.type && r.type !== 'Réel' && r.type !== 'Reel' && r.type !== 'réel';
+    const renta = r.CA>0 ? Math.round(r.resultat_net/r.CA*1000)/10 : 0;
+    const label = isProj
+      ? `${r.annee} (${(r.type||'').toLowerCase().includes('opt')?'opt.':'cons.'})`
+      : String(r.annee);
+    PROJECTIONS.push({label, CA:r.CA||0, res:r.resultat_net||0, alt:r.resultat_avec_alternatives||0, renta, type:isProj?'proj':'reel'});
+  });
+  // Mise à jour KPIs projections
+  const reels = PROJECTIONS.filter(r=>r.type==='reel');
+  const last = reels[reels.length-1];
+  const projs = PROJECTIONS.filter(r=>r.type==='proj');
+  if(last){
+    document.getElementById('kpi-p-ca').textContent = FMT(last.CA);
+    document.getElementById('kpi-p-res').textContent = FMT(last.res);
+    document.getElementById('kpi-p-alt').textContent = FMT(last.alt);
+    document.getElementById('kpi-p-eco').textContent = `+${FMT(last.alt-last.res)} avec optimisations`;
+  }
+  if(projs.length){
+    const min=Math.min(...projs.map(r=>r.CA)), max=Math.max(...projs.map(r=>r.CA));
+    document.getElementById('kpi-p-proj').textContent = min===max ? FMT(min) : `${Math.round(min/1000)}–${Math.round(max/1000)} K€`;
+  }
+  renderProjections();
+}
+
+// =====================================================================
+// INIT
+// =====================================================================
+window.addEventListener('load', ()=>renderAll());
+</script>
+</body>
+</html>

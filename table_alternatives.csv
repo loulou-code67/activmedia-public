@@ -1,0 +1,11 @@
+﻿fournisseur_actuel,categorie,depense_actuelle_eur,alternative_proposee,cout_alternatif_eur,economie_estimee_eur,economie_pct,faisabilite,priorite
+APPLE,materiel_achats,7361,MacBook reconditionné (Back Market),2700,4661,63,Facile,Haute
+APPLE,materiel_achats,7361,PC portable Asus/Lenovo (Windows),1500,5861,80,Moyen,Haute
+EDF,energie,2555,Changement fournisseur énergie (Engie/Total),1900,655,26,Facile,Haute
+ADOBE,logiciels_abonnements,315,Canva Pro,156,159,50,Facile,Moyenne
+ADOBE,logiciels_abonnements,315,Affinity Suite (achat unique),170,145,46,Facile,Moyenne
+ZOOM,logiciels_abonnements,261,Google Meet (inclus Google Workspace),0,261,100,Facile,Haute
+ZOOM,logiciels_abonnements,261,Jitsi (open source gratuit),0,261,100,Moyen,Haute
+A WORLD FOR US,logiciels_abonnements,2159,Recherche fournisseur mutualisé,800,1359,63,Difficile,Basse
+MAKE,logiciels_abonnements,108,n8n auto-hébergé (VPS ~10€/mois),120,0,0,Technique,Basse
+OPENAI,logiciels_abonnements,50,Inclure dans budget Make / n8n,0,50,100,Facile,Basse
