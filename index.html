@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>ActivMedia — Dashboard Dépenses</title>
+<title>ActivMedia - Dashboard Depenses</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -51,7 +51,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .kpi-value{font-size:24px;font-weight:700;color:#f1f5f9;line-height:1.2}
 .kpi-sub{font-size:11px;color:#444;margin-top:3px}
 
-/* --- TOOLTIP STYLE 2 (carte détaillée) --- */
+/* --- TOOLTIP STYLE 2 (carte detaillee) --- */
 .kpi-tt{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#1a1a1a;border:0.5px solid #444;border-radius:10px;padding:12px 16px;min-width:170px;pointer-events:none;opacity:0;transition:opacity .18s;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.6)}
 .kpi-card:hover .kpi-tt{opacity:1}
 .kpi-tt-title{font-size:11px;color:#666;margin-bottom:5px}
@@ -114,7 +114,7 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
   <circle cx="25" cy="25" r="22" fill="none" stroke="#1a3a7c" stroke-width="3.5"/>
   <circle cx="25" cy="25" r="15" fill="none" stroke="#f5a800" stroke-width="3.5"/>
   <circle cx="25" cy="25" r="8" fill="none" stroke="#1a3a7c" stroke-width="3.5"/>
-  <!-- Arc supérieur orange -->
+  <!-- Arc superieur orange -->
   <path d="M 8 18 Q 25 2 42 18" fill="none" stroke="#f5a800" stroke-width="3.5" stroke-linecap="round"/>
   <!-- Texte ACTIVMEDIA -->
   <text x="52" y="22" font-family="Arial,sans-serif" font-weight="900" font-size="14" fill="#1a3a7c" letter-spacing="0.5">ACTIVMEDIA</text>
@@ -123,14 +123,14 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 </svg>
     <div>
       <div class="header h1" style="color:#fff;font-size:17px;font-weight:600">ActivMedia</div>
-      <div class="header-sub">Dashboard Analyse des Dépenses</div>
+      <div class="header-sub">Dashboard Analyse des Depenses</div>
     </div>
   </div>
   <div class="header-right">
-    <span class="import-status" id="importStatus">✓ CSV importé</span>
-    <button class="btn-import" onclick="resetData()" style="background:rgba(255,107,0,.08);color:#555;border-color:#333;font-size:12px" title="Effacer les données et réinitialiser">↺</button>
+    <span class="import-status" id="importStatus">&#10003; CSV importe</span>
+    <button class="btn-import" onclick="resetData()" style="background:rgba(255,107,0,.08);color:#555;border-color:#333;font-size:12px" title="Effacer les donnees et reinitialiser">&#8635;</button>
     <button class="btn-import" onclick="document.getElementById('csvInput').click()">
-      ↑ Importer CSV
+      &#8593; Importer CSV
     </button>
     <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="handleCSV(this)"/>
   </div>
@@ -146,7 +146,7 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 
 <!-- ========== FILTER BAR ========== -->
 <div class="filter-bar">
-  <span class="filter-label">Année :</span>
+  <span class="filter-label">Annee :</span>
   <button class="filter-btn active" onclick="setYear('all',this)">Toutes</button>
   <span id="dynYearBtns"></span>
 </div>
@@ -161,12 +161,12 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
   <path d="M 12 38 Q 50 5 88 38" fill="none" stroke="#f5a800" stroke-width="6" stroke-linecap="round"/>
 </svg>
     <div style="font-size:22px;font-weight:700;color:#f1f5f9;margin-bottom:8px">ActivMedia Dashboard</div>
-    <div style="font-size:14px;color:#666;margin-bottom:28px;line-height:1.6">Importez votre fichier <code style="background:#2a2a2a;padding:2px 8px;border-radius:4px;color:#ff9a4d">depenses_clean_final.csv</code> pour visualiser vos dépenses, ou utilisez les données de démonstration.</div>
+    <div style="font-size:14px;color:#666;margin-bottom:28px;line-height:1.6">Importez votre fichier <code style="background:#2a2a2a;padding:2px 8px;border-radius:4px;color:#ff9a4d">depenses_clean_final.csv</code> pour visualiser vos depenses, ou utilisez les donnees de demonstration.</div>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-      <button onclick="triggerImportFromOverlay()" style="background:#ff6b00;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">↑ Importer mon CSV</button>
-      <button onclick="closeWelcome()" style="background:#2a2a2a;color:#aaa;border:0.5px solid #333;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer">Voir la démo</button>
+      <button onclick="triggerImportFromOverlay()" style="background:#ff6b00;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">&#8593; Importer mon CSV</button>
+      <button onclick="closeWelcome()" style="background:#2a2a2a;color:#aaa;border:0.5px solid #333;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer">Voir la demo</button>
     </div>
-    <div style="font-size:11px;color:#444;margin-top:16px">Les données sont traitées localement — rien n'est envoyé sur internet</div>
+    <div style="font-size:11px;color:#444;margin-top:16px">Les donnees sont traitees localement - rien n'est envoye sur internet</div>
   </div>
 </div>
 
@@ -175,20 +175,20 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 <!-- ============================== PAGE 1 : VUE D'ENSEMBLE ============================== -->
 <div class="page active" id="page-overview">
   <div class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-label">Total Dépenses</div><div class="kpi-value" id="kpi-total">99 421 €</div><div class="kpi-sub">Toutes années</div><div class="kpi-tt"><div class="kpi-tt-title">Total dépenses (toutes années)</div><div class="kpi-tt-val" id="tt-total">99 421 €</div><div class="kpi-tt-sub">376 factures · 71 fournisseurs</div></div></div>
-    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-fourn">71</div><div class="kpi-sub">Fournisseurs uniques</div><div class="kpi-tt"><div class="kpi-tt-title">Fournisseurs uniques détectés</div><div class="kpi-tt-val" id="tt-fourn">71</div><div class="kpi-tt-sub">Top fournisseur : LAB</div></div></div>
-    <div class="kpi-card c3"><div class="kpi-label">Nb Factures</div><div class="kpi-value" id="kpi-fac">376</div><div class="kpi-sub">Documents traités</div><div class="kpi-tt"><div class="kpi-tt-title">Factures & reçus traités</div><div class="kpi-tt-val" id="tt-fac">376</div><div class="kpi-tt-sub">Extraction PDF automatisée</div></div></div>
-    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen</div><div class="kpi-value" id="kpi-moy">264 €</div><div class="kpi-sub">Par facture</div><div class="kpi-tt"><div class="kpi-tt-title">Montant moyen par facture</div><div class="kpi-tt-val" id="tt-moy">264 €</div><div class="kpi-tt-sub">Médiane estimée : ~120 €</div></div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Depenses</div><div class="kpi-value" id="kpi-total">99 421 &euro;</div><div class="kpi-sub">Toutes annees</div><div class="kpi-tt"><div class="kpi-tt-title">Total depenses (toutes annees)</div><div class="kpi-tt-val" id="tt-total">99 421 &euro;</div><div class="kpi-tt-sub">376 factures  -  71 fournisseurs</div></div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-fourn">71</div><div class="kpi-sub">Fournisseurs uniques</div><div class="kpi-tt"><div class="kpi-tt-title">Fournisseurs uniques detectes</div><div class="kpi-tt-val" id="tt-fourn">71</div><div class="kpi-tt-sub">Top fournisseur : LAB</div></div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Nb Factures</div><div class="kpi-value" id="kpi-fac">376</div><div class="kpi-sub">Documents traites</div><div class="kpi-tt"><div class="kpi-tt-title">Factures & recus traites</div><div class="kpi-tt-val" id="tt-fac">376</div><div class="kpi-tt-sub">Extraction PDF automatisee</div></div></div>
+    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen</div><div class="kpi-value" id="kpi-moy">264 &euro;</div><div class="kpi-sub">Par facture</div><div class="kpi-tt"><div class="kpi-tt-title">Montant moyen par facture</div><div class="kpi-tt-val" id="tt-moy">264 &euro;</div><div class="kpi-tt-sub">Mediane estimee : ~120 EUR</div></div></div>
   </div>
   <div class="charts-2col">
     <div class="chart-card">
-      <div class="chart-title">Dépenses par catégorie</div>
-      <div style="position:relative;height:220px"><canvas id="chartDonut" role="img" aria-label="Répartition des dépenses par catégorie"></canvas></div>
+      <div class="chart-title">Depenses par categorie</div>
+      <div style="position:relative;height:220px"><canvas id="chartDonut" role="img" aria-label="Repartition des depenses par categorie"></canvas></div>
       <div class="legend" id="legendDonut"></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">Dépenses mensuelles par catégorie</div>
-      <div style="position:relative;height:280px"><canvas id="chartMois" role="img" aria-label="Évolution mensuelle des dépenses par catégorie"></canvas></div>
+      <div class="chart-title">Depenses mensuelles par categorie</div>
+      <div style="position:relative;height:280px"><canvas id="chartMois" role="img" aria-label="Evolution mensuelle des depenses par categorie"></canvas></div>
     </div>
   </div>
 </div>
@@ -196,20 +196,20 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 <!-- ============================== PAGE 2 : FOURNISSEURS ============================== -->
 <div class="page" id="page-fournisseurs">
   <div class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-label">Total Dépenses</div><div class="kpi-value" id="kpi-f-total">99 421 €</div><div class="kpi-tt"><div class="kpi-tt-title">Total dépenses fournisseurs</div><div class="kpi-tt-val" id="tt-f-total">99 421 €</div><div class="kpi-tt-sub">Toutes années confondues</div></div></div>
-    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-f-fourn">71</div><div class="kpi-tt"><div class="kpi-tt-title">Fournisseurs uniques</div><div class="kpi-tt-val" id="tt-f-fourn">71</div><div class="kpi-tt-sub">Actifs sur la période</div></div></div>
-    <div class="kpi-card c3"><div class="kpi-label">Fournisseur Principal</div><div class="kpi-value" id="kpi-f-main" style="font-size:18px">LAB</div><div class="kpi-tt"><div class="kpi-tt-title">Fournisseur le plus dépensé</div><div class="kpi-tt-val" id="tt-f-main" style="font-size:15px">LAB</div><div class="kpi-tt-sub">Montant total cumulé</div></div></div>
-    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen / Fournisseur</div><div class="kpi-value" id="kpi-f-moy">1 400 €</div><div class="kpi-tt"><div class="kpi-tt-title">Dépense moyenne par fournisseur</div><div class="kpi-tt-val" id="tt-f-moy">1 400 €</div><div class="kpi-tt-sub">Total ÷ nb fournisseurs</div></div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Depenses</div><div class="kpi-value" id="kpi-f-total">99 421 &euro;</div><div class="kpi-tt"><div class="kpi-tt-title">Total depenses fournisseurs</div><div class="kpi-tt-val" id="tt-f-total">99 421 &euro;</div><div class="kpi-tt-sub">Toutes annees confondues</div></div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Nb Fournisseurs</div><div class="kpi-value" id="kpi-f-fourn">71</div><div class="kpi-tt"><div class="kpi-tt-title">Fournisseurs uniques</div><div class="kpi-tt-val" id="tt-f-fourn">71</div><div class="kpi-tt-sub">Actifs sur la periode</div></div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Fournisseur Principal</div><div class="kpi-value" id="kpi-f-main" style="font-size:18px">LAB</div><div class="kpi-tt"><div class="kpi-tt-title">Fournisseur le plus depense</div><div class="kpi-tt-val" id="tt-f-main" style="font-size:15px">LAB</div><div class="kpi-tt-sub">Montant total cumule</div></div></div>
+    <div class="kpi-card c4"><div class="kpi-label">Montant Moyen / Fournisseur</div><div class="kpi-value" id="kpi-f-moy">1 400 EUR</div><div class="kpi-tt"><div class="kpi-tt-title">Depense moyenne par fournisseur</div><div class="kpi-tt-val" id="tt-f-moy">1 400 EUR</div><div class="kpi-tt-sub">Total / nb fournisseurs</div></div></div>
   </div>
   <div class="chart-card" style="margin-bottom:16px">
-    <div class="chart-title">Top 10 fournisseurs par année (€)</div>
-    <div style="position:relative;height:320px"><canvas id="chartFourn" role="img" aria-label="Top 10 fournisseurs par année"></canvas></div>
+    <div class="chart-title">Top 10 fournisseurs par annee (EUR)</div>
+    <div style="position:relative;height:320px"><canvas id="chartFourn" role="img" aria-label="Top 10 fournisseurs par annee"></canvas></div>
   </div>
   <div class="chart-card">
-    <div class="chart-title">Évolution des dépenses fournisseurs — 2023 vs 2025</div>
+    <div class="chart-title">Evolution des depenses fournisseurs - 2023 vs 2025</div>
     <div class="tbl-wrap">
       <table id="tableFournEvo">
-        <thead><tr><th>Fournisseur</th><th>2023</th><th>2025</th><th>Évolution</th></tr></thead>
+        <thead><tr><th>Fournisseur</th><th>2023</th><th>2025</th><th>Evolution</th></tr></thead>
         <tbody id="tbodyFournEvo"></tbody>
       </table>
     </div>
@@ -219,23 +219,23 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 <!-- ============================== PAGE 3 : ALTERNATIVES ============================== -->
 <div class="page" id="page-alternatives">
   <div class="info-banner">
-    <strong>Alternatives automatiques</strong> — Cette page génère des pistes d'optimisation automatiquement depuis vos données de dépenses. Importez un nouveau <code>depenses_clean_final.csv</code> pour les actualiser.
+    <strong>Alternatives automatiques</strong> ? Cette page genere des pistes d'optimisation automatiquement depuis vos donnees de depenses. Importez un nouveau <code>depenses_clean_final.csv</code> pour les actualiser.
   </div>
   <div class="kpi-grid">
-    <div class="kpi-card c5"><div class="kpi-label">Priorités Hautes</div><div class="kpi-value" id="kpi-a-haute">3</div><div class="kpi-sub">Fournisseurs à traiter en premier</div></div>
-    <div class="kpi-card c2"><div class="kpi-label">Postes à Optimiser</div><div class="kpi-value" id="kpi-a-postes">10</div><div class="kpi-sub">Alternatives identifiées</div></div>
-    <div class="kpi-card c3"><div class="kpi-label">Économie Maximale</div><div class="kpi-value" id="kpi-a-max">5 861 €</div><div class="kpi-sub" id="kpi-a-maxsub">Scénario optimal</div></div>
-    <div class="kpi-card"><div class="kpi-label">Économie Estimée / An</div><div class="kpi-value" id="kpi-a-est">1 858 €</div><div class="kpi-sub">Alternatives raisonnables</div></div>
+    <div class="kpi-card c5"><div class="kpi-label">Priorites Hautes</div><div class="kpi-value" id="kpi-a-haute">3</div><div class="kpi-sub">Fournisseurs a traiter en premier</div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Postes a Optimiser</div><div class="kpi-value" id="kpi-a-postes">10</div><div class="kpi-sub">Alternatives identifiees</div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Economie Maximale</div><div class="kpi-value" id="kpi-a-max">5 861 EUR</div><div class="kpi-sub" id="kpi-a-maxsub">Scenario optimal</div></div>
+    <div class="kpi-card"><div class="kpi-label">Economie Estimee / An</div><div class="kpi-value" id="kpi-a-est">1 858 EUR</div><div class="kpi-sub">Alternatives raisonnables</div></div>
   </div>
   <div class="chart-card" style="margin-bottom:16px">
-    <div class="chart-title">Économies potentielles par fournisseur (€)</div>
-    <div style="position:relative;height:200px"><canvas id="chartAlt" role="img" aria-label="Économies potentielles par alternative"></canvas></div>
+    <div class="chart-title">Economies potentielles par fournisseur (EUR)</div>
+    <div style="position:relative;height:200px"><canvas id="chartAlt" role="img" aria-label="Economies potentielles par alternative"></canvas></div>
   </div>
   <div class="chart-card">
-    <div class="chart-title">Tableau des alternatives — Détail</div>
+    <div class="chart-title">Tableau des alternatives - Detail</div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Fournisseur</th><th>Catégorie</th><th>Actuel</th><th>Alternative proposée</th><th>Coût alt.</th><th>Économie</th><th>%</th><th>Faisabilité</th><th>Priorité</th></tr></thead>
+        <thead><tr><th>Fournisseur</th><th>Categorie</th><th>Actuel</th><th>Alternative proposee</th><th>Cout alt.</th><th>Economie</th><th>%</th><th>Faisabilite</th><th>Priorite</th></tr></thead>
         <tbody id="tbodyAlt"></tbody>
       </table>
     </div>
@@ -245,27 +245,27 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 <!-- ============================== PAGE 4 : PROJECTIONS ============================== -->
 <div class="page" id="page-projections">
   <div class="info-banner">
-    <strong>Projections automatiques</strong> — Les projections sont calculées automatiquement depuis vos données de dépenses importées. Importez un nouveau <code>depenses_clean_final.csv</code> pour les actualiser.
+    <strong>Projections automatiques</strong> ? Les projections sont calculees automatiquement depuis vos donnees de depenses importees. Importez un nouveau <code>depenses_clean_final.csv</code> pour les actualiser.
   </div>
   <div class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-label">CA Réel (dernière année)</div><div class="kpi-value" id="kpi-p-ca">231 833 €</div></div>
-    <div class="kpi-card c2"><div class="kpi-label">Résultat Net Réel</div><div class="kpi-value" id="kpi-p-res">60 865 €</div></div>
-    <div class="kpi-card c3"><div class="kpi-label">Résultat avec Alternatives</div><div class="kpi-value" id="kpi-p-alt">62 723 €</div><div class="kpi-sub" id="kpi-p-eco">+1 858 € avec optimisations</div></div>
-    <div class="kpi-card c4"><div class="kpi-label">CA Projection 2026</div><div class="kpi-value" id="kpi-p-proj">232–243 K€</div><div class="kpi-sub">Conservateur / Optimiste</div></div>
+    <div class="kpi-card"><div class="kpi-label">CA Reel (derniere annee)</div><div class="kpi-value" id="kpi-p-ca">231 833 EUR</div></div>
+    <div class="kpi-card c2"><div class="kpi-label">Resultat Net Reel</div><div class="kpi-value" id="kpi-p-res">60 865 EUR</div></div>
+    <div class="kpi-card c3"><div class="kpi-label">Resultat avec Alternatives</div><div class="kpi-value" id="kpi-p-alt">62 723 EUR</div><div class="kpi-sub" id="kpi-p-eco">+1 858 EUR avec optimisations</div></div>
+    <div class="kpi-card c4"><div class="kpi-label">CA Projection 2026</div><div class="kpi-value" id="kpi-p-proj">232-243 KEUR</div><div class="kpi-sub">Conservateur / Optimiste</div></div>
   </div>
   <div class="charts-2col">
     <div class="chart-card">
-      <div class="chart-title">CA & Résultat net (2022–2026)</div>
-      <div style="position:relative;height:300px"><canvas id="chartProj" role="img" aria-label="Évolution CA et résultat net 2022-2026"></canvas></div>
+      <div class="chart-title">CA & Resultat net (2022-2026)</div>
+      <div style="position:relative;height:300px"><canvas id="chartProj" role="img" aria-label="Evolution CA et resultat net 2022-2026"></canvas></div>
       <div class="legend" style="margin-top:10px">
         <div class="leg"><div class="leg-sq" style="background:#ff6b00"></div><span style="color:#888">CA</span></div>
-        <div class="leg"><div class="leg-sq" style="background:#10b981"></div><span style="color:#888">Résultat net</span></div>
-        <div class="leg"><div class="leg-sq" style="background:#f59e0b"></div><span style="color:#888">Résultat avec alternatives</span></div>
+        <div class="leg"><div class="leg-sq" style="background:#10b981"></div><span style="color:#888">Resultat net</span></div>
+        <div class="leg"><div class="leg-sq" style="background:#f59e0b"></div><span style="color:#888">Resultat avec alternatives</span></div>
       </div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">Taux de rentabilité (résultat / CA)</div>
-      <div style="position:relative;height:300px"><canvas id="chartRenta" role="img" aria-label="Taux de rentabilité par année"></canvas></div>
+      <div class="chart-title">Taux de rentabilite (resultat / CA)</div>
+      <div style="position:relative;height:300px"><canvas id="chartRenta" role="img" aria-label="Taux de rentabilite par annee"></canvas></div>
     </div>
   </div>
 </div>
@@ -274,7 +274,7 @@ tbody td{padding:9px 12px;color:#ccc;white-space:nowrap}
 
 <script>
 // =====================================================================
-// DONNÉES EMBARQUÉES (générées depuis depenses_clean_final.csv)
+// DONNEES EMBARQUEES (generees depuis depenses_clean_final.csv)
 // =====================================================================
 const FMT = (v) => new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v);
 const FMT2 = (v) => new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(v);
@@ -286,8 +286,8 @@ const CAT_COLORS = {
   autre:'#64748b', formation:'#06b6d4', communication:'#8b5cf6'
 };
 const CAT_LABELS = {
-  prestations:'Prestations', materiel_achats:'Matériel & Achats', travaux:'Travaux',
-  logiciels_abonnements:'Logiciels/Abonnements', energie:'Énergie', telecom:'Télécom',
+  prestations:'Prestations', materiel_achats:'Materiel & Achats', travaux:'Travaux',
+  logiciels_abonnements:'Logiciels/Abonnements', energie:'Energie', telecom:'Telecom',
   restauration:'Restauration', transport:'Transport', assurance:'Assurance'
 };
 
@@ -321,7 +321,7 @@ const CATS = {
   ]
 };
 
-// Données mensuelles brutes {m, c, v} -> pivotées au render
+// Donnees mensuelles brutes {m, c, v} -> pivotees au render
 const MOIS_RAW = [
   {m:"2023-01",c:"energie",v:74},{m:"2023-01",c:"logiciels_abonnements",v:52},{m:"2023-01",c:"materiel_achats",v:292},{m:"2023-01",c:"prestations",v:420},{m:"2023-01",c:"restauration",v:40},{m:"2023-01",c:"telecom",v:73},
   {m:"2023-03",c:"energie",v:109},{m:"2023-03",c:"logiciels_abonnements",v:27},{m:"2023-03",c:"materiel_achats",v:718},{m:"2023-03",c:"prestations",v:1130},{m:"2023-03",c:"telecom",v:73},
@@ -375,15 +375,15 @@ const FOURN_EVO = [
 ];
 
 const ALTERNATIVES = [
-  {f:"APPLE",cat:"Matériel",act:7361,alt:"MacBook reconditionné (Back Market)",altc:2700,eco:4661,pct:63,fais:"Facile",prio:"Haute"},
-  {f:"APPLE",cat:"Matériel",act:7361,alt:"PC portable Asus/Lenovo (Windows)",altc:1500,eco:5861,pct:80,fais:"Moyen",prio:"Haute"},
-  {f:"EDF",cat:"Énergie",act:2555,alt:"Changement fournisseur (Engie/Total)",altc:1900,eco:655,pct:26,fais:"Facile",prio:"Haute"},
+  {f:"APPLE",cat:"Materiel",act:7361,alt:"MacBook reconditionne (Back Market)",altc:2700,eco:4661,pct:63,fais:"Facile",prio:"Haute"},
+  {f:"APPLE",cat:"Materiel",act:7361,alt:"PC portable Asus/Lenovo (Windows)",altc:1500,eco:5861,pct:80,fais:"Moyen",prio:"Haute"},
+  {f:"EDF",cat:"Energie",act:2555,alt:"Changement fournisseur (Engie/Total)",altc:1900,eco:655,pct:26,fais:"Facile",prio:"Haute"},
   {f:"ZOOM",cat:"Logiciels",act:261,alt:"Google Meet (inclus Google Workspace)",altc:0,eco:261,pct:100,fais:"Facile",prio:"Haute"},
   {f:"ZOOM",cat:"Logiciels",act:261,alt:"Jitsi (open source gratuit)",altc:0,eco:261,pct:100,fais:"Moyen",prio:"Haute"},
   {f:"ADOBE",cat:"Logiciels",act:315,alt:"Canva Pro",altc:156,eco:159,pct:50,fais:"Facile",prio:"Moyenne"},
   {f:"ADOBE",cat:"Logiciels",act:315,alt:"Affinity Suite (achat unique)",altc:170,eco:145,pct:46,fais:"Facile",prio:"Moyenne"},
-  {f:"A WORLD FOR US",cat:"Logiciels",act:2159,alt:"Recherche fournisseur mutualisé",altc:800,eco:1359,pct:63,fais:"Difficile",prio:"Basse"},
-  {f:"MAKE",cat:"Logiciels",act:108,alt:"n8n auto-hébergé (VPS ~10€/mois)",altc:120,eco:0,pct:0,fais:"Technique",prio:"Basse"},
+  {f:"A WORLD FOR US",cat:"Logiciels",act:2159,alt:"Recherche fournisseur mutualise",altc:800,eco:1359,pct:63,fais:"Difficile",prio:"Basse"},
+  {f:"MAKE",cat:"Logiciels",act:108,alt:"n8n auto-heberge (VPS ~10EUR/mois)",altc:120,eco:0,pct:0,fais:"Technique",prio:"Basse"},
   {f:"OPENAI",cat:"Logiciels",act:50,alt:"Inclure dans budget Make / n8n",altc:0,eco:50,pct:100,fais:"Facile",prio:"Basse"}
 ];
 
@@ -402,8 +402,8 @@ const PROJECTIONS = [
 let activeYear = 'all';
 const charts = {};
 const MOIS_LABELS = {
-  '01':'Jan','02':'Fév','03':'Mar','04':'Avr','05':'Mai','06':'Jun',
-  '07':'Jul','08':'Aoû','09':'Sep','10':'Oct','11':'Nov','12':'Déc'
+  '01':'Jan','02':'Fev','03':'Mar','04':'Avr','05':'Mai','06':'Jun',
+  '07':'Jul','08':'Aou','09':'Sep','10':'Oct','11':'Nov','12':'Dec'
 };
 
 // =====================================================================
@@ -414,7 +414,7 @@ function switchTab(tab, el) {
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+tab).classList.add('active');
   el.classList.add('active');
-  // Masquer le filtre année sur Alternatives et Projections (données statiques)
+  // Masquer le filtre annee sur Alternatives et Projections (donnees statiques)
   const filterBar = document.querySelector('.filter-bar');
   if(tab === 'alternatives' || tab === 'projections') {
     filterBar.style.display = 'none';
@@ -486,7 +486,7 @@ function renderAll() {
 }
 
 // =====================================================================
-// PAGE 1 — VUE D'ENSEMBLE
+// PAGE 1 ? VUE D'ENSEMBLE
 // =====================================================================
 function updateKPIs(yr) {
   const k = KPI[yr] || KPI.all;
@@ -518,7 +518,7 @@ function renderDonut(yr) {
             label:function(ctx){
               var pct=Math.round(ctx.parsed/total*100);
               var rank=ctx.dataIndex+1;
-              return ['  '+FMT(ctx.parsed)+'  ·  '+pct+'% du total','  Rang #'+rank+' sur '+cats.length];
+              return ['  '+FMT(ctx.parsed)+'  ?  '+pct+'% du total','  Rang #'+rank+' sur '+cats.length];
             }
           }
         }
@@ -550,7 +550,7 @@ function renderMois(yr) {
       responsive:true,maintainAspectRatio:false,
       scales:{
         x:{stacked:true,ticks:{maxRotation:45,font:{size:10}},grid:{display:false,color:'#222'}},
-        y:{stacked:true,ticks:{callback:v=>v>=1000?`${v/1000}k€`:`${v}€`,font:{size:10},color:'#666'},grid:{color:'#222'}}
+        y:{stacked:true,ticks:{callback:v=>v>=1000?`${v/1000}k?`:`${v}?`,font:{size:10},color:'#666'},grid:{color:'#222'}}
       },
       plugins:{
         legend:{display:false},
@@ -575,7 +575,7 @@ function renderMois(yr) {
 }
 
 // =====================================================================
-// PAGE 2 — FOURNISSEURS
+// PAGE 2 ? FOURNISSEURS
 // =====================================================================
 function getAvailableYears() {
   const yrs = new Set();
@@ -623,7 +623,7 @@ function renderFournChart(yr) {
       indexAxis:'y',
       responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{ticks:{callback:v=>`${Math.round(v/1000)}k€`,font:{size:10},color:'#666'},grid:{color:'#222'}},
+        x:{ticks:{callback:v=>`${Math.round(v/1000)}k?`,font:{size:10},color:'#666'},grid:{color:'#222'}},
         y:{ticks:{font:{size:11}},grid:{display:false,color:'#222'}}
       },
       plugins:{
@@ -636,7 +636,7 @@ function renderFournChart(yr) {
           label:function(ctx){return '  '+ctx.dataset.label+' : '+FMT(ctx.parsed.x);},
           footer:function(items){
             var tot=items.reduce(function(s,i){return s+(i.parsed.x||0);},0);
-            return tot>0?'Total cumulé : '+FMT(tot):'';
+            return tot>0?'Total cumule : '+FMT(tot):'';
           }
         }
         }
@@ -650,7 +650,7 @@ function renderFournEvoTable() {
   const th=document.querySelector('#tableFournEvo thead tr');
   const yrs=th?[...th.querySelectorAll('th')].slice(1,3).map(t=>t.textContent):['2023','2025'];
   if(!FOURN_EVO.length){
-    tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:#444">Aucune donnée — importez un CSV pour afficher l'évolution des fournisseurs</td></tr>';
+    tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:#444">Aucune donnee - importez un CSV pour afficher l&#39;evolution des fournisseurs</td></tr>';
     return;
   }
   tbody.innerHTML = FOURN_EVO.map(r=>{
@@ -660,37 +660,37 @@ function renderFournEvoTable() {
       context=`Fournisseur absent en ${yrs[0]}, apparu en ${yrs[1]}`;
     } else if(r.evo<=-100){
       evoBadge=`<span class="evo-neg">${r.evo}%</span>`;
-      context=`Fournisseur abandonné : plus de dépenses en ${yrs[1]}`;
+      context='Fournisseur abandonne : plus de depenses en '+yrs[1];
     } else if(r.evo>50){
       evoBadge=`<span class="evo-pos">+${r.evo}%</span>`;
-      context=`Forte hausse : +${FMT(r.m25-r.m23)} de dépenses supplémentaires`;
+      context='Forte hausse : +'+FMT(r.m25-r.m23)+' de depenses supplementaires';
     } else if(r.evo>0){
       evoBadge=`<span class="evo-pos">+${r.evo}%</span>`;
-      context=`En légère hausse : +${FMT(r.m25-r.m23)}`;
+      context='En legere hausse : +'+FMT(r.m25-r.m23);
     } else if(r.evo<-50){
       evoBadge=`<span class="evo-neg">${r.evo}%</span>`;
-      context=`Forte réduction : ${FMT(r.m23-r.m25)} économisés`;
+      context='Forte reduction : '+FMT(r.m23-r.m25)+' economises';
     } else {
       evoBadge=`<span class="evo-neg">${r.evo}%</span>`;
-      context=`En légère baisse : ${FMT(r.m23-r.m25)} économisés`;
+      context='En legere baisse : '+FMT(r.m23-r.m25)+' economises';
     }
-    const totalPart=r.m23>0&&r.m25>0?`Cumulé 2 années : ${FMT(r.m23+r.m25)}`:'';
-    return `<tr class="trow" title="${r.f} — ${context}${totalPart?' | '+totalPart:''}">
+    var totalPart=r.m23>0&&r.m25>0?'Cumule 2 annees : '+FMT(r.m23+r.m25):'';
+    return `<tr class="trow" title="${r.f} - ${context}${totalPart?' | '+totalPart:''}">
       <td><strong>${r.f}</strong></td>
-      <td>${r.m23>0?FMT(r.m23):'—'}</td>
-      <td>${r.m25>0?FMT(r.m25):'—'}</td>
+      <td>${r.m23>0?FMT(r.m23):'-'}</td>
+      <td>${r.m25>0?FMT(r.m25):'-'}</td>
       <td>${evoBadge}</td>
     </tr>`;
   }).join('');
 }
 
 // =====================================================================
-// PAGE 3 — ALTERNATIVES (générées automatiquement depuis les dépenses)
+// PAGE 3 ? ALTERNATIVES (generees automatiquement depuis les depenses)
 // =====================================================================
 function generateAlternatives() {
-  // Si des alternatives manuelles existent, les utiliser en priorité
+  // Si des alternatives manuelles existent, les utiliser en priorite
   if(ALTERNATIVES.length > 0) return ALTERNATIVES;
-  // Sinon générer automatiquement depuis le top des fournisseurs
+  // Sinon generer automatiquement depuis le top des fournisseurs
   const generated = [];
   const topFourn = [...FOURN_YEAR]
     .map(r=>{ const allYrs=getAvailableYears(); return {f:r.f, total:allYrs.reduce((s,y)=>s+(r[y]||0),0)}; })
@@ -705,7 +705,7 @@ function generateAlternatives() {
     restauration:{alt:"Limitation depenses restauration", pct:30, fais:"Facile", prio:"Basse"},
     assurance:  {alt:"Comparaison assureurs professionnels", pct:15, fais:"Facile", prio:"Basse"},
   };
-  // Trouver la catégorie dominante de chaque fournisseur
+  // Trouver la categorie dominante de chaque fournisseur
   const depsRows = window._rawRows || [];
   topFourn.forEach(({f, total})=>{
     if(total === 0) return;
@@ -727,7 +727,7 @@ function updateAltKPIs(alts) {
   document.getElementById('kpi-a-haute').textContent = hautes;
   document.getElementById('kpi-a-postes').textContent = alts.length;
   document.getElementById('kpi-a-max').textContent = FMT(maxEco);
-  document.getElementById('kpi-a-maxsub').textContent = maxItem ? `${maxItem.f} — ${maxItem.alt.substring(0,30)}` : '';
+  document.getElementById('kpi-a-maxsub').textContent = maxItem ? `${maxItem.f} ? ${maxItem.alt.substring(0,30)}` : '';
   document.getElementById('kpi-a-est').textContent = FMT(Math.round(totalEco * 0.35));
 }
 
@@ -735,24 +735,25 @@ function renderAltTable() {
   const alts = generateAlternatives();
   updateAltKPIs(alts);
   if(!alts.length){
-    document.getElementById('tbodyAlt').innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:#444">Aucune alternative — importez un CSV pour générer des recommandations automatiques</td></tr>';
+    document.getElementById('tbodyAlt').innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:#444">Aucune alternative - importez un CSV pour generer des recommandations automatiques</td></tr>';
     return;
   }
   document.getElementById('tbodyAlt').innerHTML = alts.map(r=>{
     const bc = r.prio.toLowerCase();
     const fc = r.fais.toLowerCase();
-    const saving=r.eco>0?`Économie de ${FMT(r.eco)}/an`:'Pas d économie directe';
-    return `<tr class="trow" title="${r.f} → ${r.alt} | ${saving} | Faisabilité : ${r.fais} | Priorité : ${r.prio}">
-      <td><strong>${r.f}</strong></td>
-      <td>${r.cat}</td>
-      <td style="font-weight:600">${FMT(r.act)}</td>
-      <td>${r.alt}</td>
-      <td>${r.altc>0?FMT(r.altc):'Gratuit'}</td>
-      <td style="color:#34d399;font-weight:600">${r.eco>0?FMT(r.eco):'—'}</td>
-      <td><strong>${r.pct}%</strong></td>
-      <td><span class="badge b-${fc}">${r.fais}</span></td>
-      <td><span class="badge b-${bc}">${r.prio}</span></td>
-    </tr>`;
+    var saving=r.eco>0?'Economie : '+FMT(r.eco)+'/an':'Pas d economie';
+    var ttitle=r.f+' -> '+r.alt+' | '+saving+' | '+r.fais+' | '+r.prio;
+    return '<tr class="trow" title="'+ttitle+'">'
+      +'<td><strong>'+r.f+'</strong></td>'
+      +'<td>'+r.cat+'</td>'
+      +'<td style="font-weight:600">'+FMT(r.act)+'</td>'
+      +'<td>'+r.alt+'</td>'
+      +'<td>'+(r.altc>0?FMT(r.altc):'Gratuit')+'</td>'
+      +'<td style="color:#34d399;font-weight:600">'+(r.eco>0?FMT(r.eco):'-')+'</td>'
+      +'<td><strong>'+r.pct+'%</strong></td>'
+      +'<td><span class="badge b-'+fc+'">'+r.fais+'</span></td>'
+      +'<td><span class="badge b-'+bc+'">'+r.prio+'</span></td>'
+      +'</tr>';
   }).join('');
 }
 
@@ -762,9 +763,9 @@ function renderAltChart() {
   charts.chartAlt = new Chart(document.getElementById('chartAlt'),{
     type:'bar',
     data:{
-      labels:data.map(r=>`${r.f} — ${r.alt.substring(0,30)}`),
+      labels:data.map(r=>`${r.f} ? ${r.alt.substring(0,30)}`),
       datasets:[{
-        label:'Économie estimée (€)',
+        label:'Economie estimee (EUR)',
         data:data.map(r=>r.eco),
         backgroundColor:data.map(r=>r.prio==='Haute'?'#059669':r.prio==='Moyenne'?'#f59e0b':'#94a3b8'),
         borderRadius:4
@@ -773,7 +774,7 @@ function renderAltChart() {
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{ticks:{callback:v=>`${v}€`,font:{size:10},color:'#666'},grid:{color:'#222'}},
+        x:{ticks:{callback:v=>`${v}?`,font:{size:10},color:'#666'},grid:{color:'#222'}},
         y:{ticks:{font:{size:10}},grid:{display:false,color:'#222'}}
       },
       plugins:{
@@ -788,7 +789,7 @@ function renderAltChart() {
           footer:function(items){
             var alts=generateAlternatives().filter(function(r){return r.eco>0;});
             var a=alts[items[0].dataIndex];
-            return a?['Priorite : '+a.prio+' · Faisabilite : '+a.fais,'Actuel : '+FMT(a.act)+' → Alt : '+(a.altc>0?FMT(a.altc):'Gratuit')]:[];
+            return a?['Priorite : '+a.prio+' ? Faisabilite : '+a.fais,'Actuel : '+FMT(a.act)+' ? Alt : '+(a.altc>0?FMT(a.altc):'Gratuit')]:[];
           }
         }}
       }
@@ -797,12 +798,12 @@ function renderAltChart() {
 }
 
 // =====================================================================
-// PAGE 4 — PROJECTIONS (calculées automatiquement depuis les dépenses)
+// PAGE 4 ? PROJECTIONS (calculees automatiquement depuis les depenses)
 // =====================================================================
 function computeProjFromDepenses() {
-  // Calcule CA estimé = dépenses * facteur sectoriel formation (dépenses ~35% du CA)
+  // Calcule CA estime = depenses * facteur sectoriel formation (depenses ~35% du CA)
   const RATIO_CA = 0.35;
-  // Calcule résultat estimé = CA - dépenses - charges fixes estimées (40% CA)
+  // Calcule resultat estime = CA - depenses - charges fixes estimees (40% CA)
   const CHARGES_FIXES_RATIO = 0.40;
   const allYrs = getAvailableYears();
   const generated = [];
@@ -816,7 +817,7 @@ function computeProjFromDepenses() {
     const renta = Math.round(res / CA * 1000) / 10;
     generated.push({label:yr, CA, res, alt:res+1858, renta, type:'reel'});
   });
-  // Projection année suivante (optimiste +5%, conservateur stable)
+  // Projection annee suivante (optimiste +5%, conservateur stable)
   if(generated.length > 0){
     const last = generated[generated.length-1];
     const nextYr = String(parseInt(last.label)+1);
@@ -829,10 +830,10 @@ function computeProjFromDepenses() {
 function renderProjections() {
   destroyChart('chartProj');
   destroyChart('chartRenta');
-  // Si on a des données importées, recalcule les projections automatiquement
+  // Si on a des donnees importees, recalcule les projections automatiquement
   const hasImported = getAvailableYears().length > 0 && KPI[getAvailableYears()[0]];
   const projData = hasImported ? computeProjFromDepenses() : PROJECTIONS;
-  // Mise à jour KPIs
+  // Mise a jour KPIs
   const reels = projData.filter(r=>r.type==='reel');
   const last = reels[reels.length-1];
   const projs = projData.filter(r=>r.type==='proj');
@@ -845,14 +846,14 @@ function renderProjections() {
   if(projs.length){
     const min=Math.min(...projs.map(r=>r.CA)), max=Math.max(...projs.map(r=>r.CA));
     const nextYr = projs[0].label.split(' ')[0];
-    document.getElementById('kpi-p-proj').textContent = min===max ? FMT(min) : `${Math.round(min/1000)}–${Math.round(max/1000)} K€`;
+    document.getElementById('kpi-p-proj').textContent = min===max ? FMT(min) : `${Math.round(min/1000)}?${Math.round(max/1000)} K?`;
     document.querySelector('[for=kpi-p-proj], #kpi-p-proj').closest('.kpi-card').querySelector('.kpi-label').textContent = `CA Projection ${nextYr}`;
   }
   // Titre dynamique
   const firstY = reels[0]?.label||'';
   const lastProj = projData[projData.length-1]?.label||'';
   const projTitle = document.querySelector('#page-projections .chart-title');
-  if(projTitle) projTitle.textContent = `CA & Résultat net (${firstY}–${lastProj})`;
+  if(projTitle) projTitle.textContent = 'CA & Resultat net ('+firstY+'-'+lastProj+')';
   const labels = projData.map(r=>r.label);
   const colors = projData.map(r=>r.type==='proj'?'rgba(37,99,235,0.4)':'#2563eb');
   charts.chartProj = new Chart(document.getElementById('chartProj'),{
@@ -861,15 +862,15 @@ function renderProjections() {
       labels,
       datasets:[
         {type:'bar',label:'CA',data:projData.map(r=>r.CA),backgroundColor:colors,borderRadius:4,order:2},
-        {type:'line',label:'Résultat net',data:projData.map(r=>r.res),borderColor:'#059669',backgroundColor:'rgba(5,150,105,.1)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#059669',borderWidth:2,order:1},
-        {type:'line',label:'Résultat avec alternatives',data:projData.map(r=>r.alt),borderColor:'#f59e0b',backgroundColor:'transparent',borderDash:[5,3],tension:.3,pointRadius:4,pointBackgroundColor:'#f59e0b',borderWidth:2,order:1}
+        {type:'line',label:'Resultat net',data:projData.map(r=>r.res),borderColor:'#059669',backgroundColor:'rgba(5,150,105,.1)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#059669',borderWidth:2,order:1},
+        {type:'line',label:'Resultat avec alternatives',data:projData.map(r=>r.alt),borderColor:'#f59e0b',backgroundColor:'transparent',borderDash:[5,3],tension:.3,pointRadius:4,pointBackgroundColor:'#f59e0b',borderWidth:2,order:1}
       ]
     },
     options:{
       responsive:true,maintainAspectRatio:false,
       scales:{
         x:{grid:{display:false,color:'#222'},ticks:{font:{size:11}}},
-        y:{ticks:{callback:v=>`${Math.round(v/1000)}k€`,font:{size:10},color:'#666'},grid:{color:'#222'}}
+        y:{ticks:{callback:v=>`${Math.round(v/1000)}k?`,font:{size:10},color:'#666'},grid:{color:'#222'}}
       },
       plugins:{
         legend:{display:false},
@@ -895,7 +896,7 @@ function renderProjections() {
     data:{
       labels,
       datasets:[{
-        label:'Taux de rentabilité (%)',
+        label:'Taux de rentabilite (%)',
         data:projData.map(r=>r.renta),
         borderColor:'#2563eb',
         backgroundColor:'rgba(37,99,235,.08)',
@@ -932,11 +933,11 @@ function renderProjections() {
 }
 
 // =====================================================================
-// CSV IMPORT — AUTO-DÉTECTION DU TYPE DE FICHIER
-// Les 3 CSV du projet sont supportés :
-//   depenses_clean_final.csv  → pages 1 & 2
-//   table_alternatives.csv    → page 3
-//   table_projection.csv      → page 4
+// CSV IMPORT ? AUTO-DETECTION DU TYPE DE FICHIER
+// Les 3 CSV du projet sont supportes :
+//   depenses_clean_final.csv  ? pages 1 & 2
+//   table_alternatives.csv    ? page 3
+//   table_projection.csv      ? page 4
 // =====================================================================
 function handleCSV(input) {
   const file = input.files[0];
@@ -946,36 +947,36 @@ function handleCSV(input) {
     complete:function(res){
       try {
         const rows = res.data.filter(r=>Object.keys(r).some(k=>r[k]!==null));
-        if(!rows.length){ showStatus('❌ Fichier vide ou illisible.', true); return; }
+        if(!rows.length){ showStatus('OK Fichier vide ou illisible.', true); return; }
         const cols = Object.keys(rows[0]);
 
-        // Détection automatique par colonnes
+        // Detection automatique par colonnes
         if(cols.includes('montant_ttc') && cols.includes('fournisseur')) {
           const depenses = rows.filter(r=>r.montant_ttc>0 && r.est_depense!==false);
-          if(!depenses.length){ showStatus('❌ Aucune dépense valide trouvée.', true); return; }
+          if(!depenses.length){ showStatus('OK Aucune depense valide trouvee.', true); return; }
           recomputeDepenses(depenses);
           closeWelcome();
-          showStatus(`✓ Dépenses : ${depenses.length} lignes importées`);
+          showStatus('OK Depenses : '+depenses.length+' lignes importees');
 
         } else if(cols.includes('fournisseur_actuel') && cols.includes('alternative_proposee')) {
           recomputeAlternatives(rows);
           closeWelcome();
-          showStatus(`✓ Alternatives : ${rows.length} lignes importées`);
+          showStatus('OK Alternatives : '+rows.length+' lignes importees');
 
         } else if(cols.includes('resultat_net') && cols.includes('CA')) {
           recomputeProjections(rows);
           closeWelcome();
-          showStatus(`✓ Projections : ${rows.length} lignes importées`);
+          showStatus('OK Projections : '+rows.length+' lignes importees');
 
         } else {
-          showStatus('❌ Format non reconnu. Colonnes détectées : ' + cols.slice(0,4).join(', '), true);
+          showStatus('OK Format non reconnu. Colonnes detectees : ' + cols.slice(0,4).join(', '), true);
         }
       } catch(err) {
         console.error('Erreur traitement CSV:', err);
-        showStatus('❌ Erreur lors du traitement : ' + err.message, true);
+        showStatus('OK Erreur lors du traitement : ' + err.message, true);
       }
     },
-    error:(err)=>showStatus('❌ Erreur lecture CSV : ' + (err.message||'fichier invalide'), true)
+    error:(err)=>showStatus('OK Erreur lecture CSV : ' + (err.message||'fichier invalide'), true)
   });
   input.value='';
 }
@@ -988,14 +989,14 @@ function showStatus(msg, isErr=false) {
   setTimeout(()=>el.style.display='none', 5000);
 }
 
-// ─── RECALCUL DEPUIS depenses_clean_final.csv ────────────────────────
+// ??? RECALCUL DEPUIS depenses_clean_final.csv ????????????????????????
 function recomputeDepenses(rows) {
   window._rawRows = rows;
-  ALTERNATIVES.length = 0; // Reset pour régénération automatique
+  ALTERNATIVES.length = 0; // Reset pour regeneration automatique
   saveToStorage(rows); // Persistance locale
   const allYrs = [...new Set(rows.map(r=>String(r.annee)).filter(Boolean))].sort();
 
-  // KPIs globaux + par année
+  // KPIs globaux + par annee
   const total = rows.reduce((s,r)=>s+(r.montant_ttc||0),0);
   const fournSet = new Set(rows.map(r=>r.fournisseur).filter(Boolean));
   KPI.all = {total:Math.round(total), fourn:fournSet.size, fac:rows.length, moy:Math.round(total/rows.length)||0};
@@ -1005,7 +1006,7 @@ function recomputeDepenses(rows) {
     KPI[yr] = {total:Math.round(t), fourn:new Set(sub.map(r=>r.fournisseur).filter(Boolean)).size, fac:sub.length, moy:Math.round(t/sub.length)||0};
   });
 
-  // Catégories
+  // Categories
   ['all',...allYrs].forEach(yr=>{
     const sub = yr==='all' ? rows : rows.filter(r=>String(r.annee)===yr);
     const acc={};
@@ -1013,7 +1014,7 @@ function recomputeDepenses(rows) {
     CATS[yr] = Object.entries(acc).map(([k,v])=>({k,v:Math.round(v)})).sort((a,b)=>b.v-a.v);
   });
 
-  // Données mensuelles
+  // Donnees mensuelles
   MOIS_RAW.length=0;
   rows.forEach(r=>{
     if(!r.date_document) return;
@@ -1023,7 +1024,7 @@ function recomputeDepenses(rows) {
     MOIS_RAW.push({m, c:r.categorie_depense||'autre', v:r.montant_ttc||0});
   });
 
-  // Top 10 fournisseurs par année (dynamique selon les années présentes)
+  // Top 10 fournisseurs par annee (dynamique selon les annees presentes)
   const fournAcc={};
   rows.forEach(r=>{
     const f=r.fournisseur; if(!f) return;
@@ -1041,11 +1042,11 @@ function recomputeDepenses(rows) {
   FOURN_YEAR.length=0;
   newFournYear.forEach(r=>FOURN_YEAR.push(r));
 
-  // Évolution : compare première vs dernière année disponible
+  // Evolution : compare premiere vs derniere annee disponible
   const yr1=allYrs[0], yr2=allYrs[allYrs.length-1];
-  // Mettre à jour le titre du tableau
+  // Mettre a jour le titre du tableau
   const th = document.querySelector('#tableFournEvo thead tr');
-  if(th) th.innerHTML=`<th>Fournisseur</th><th>${yr1}</th><th>${yr2}</th><th>Évolution</th>`;
+  if(th) th.innerHTML='<th>Fournisseur</th><th>'+yr1+'</th><th>'+yr2+'</th><th>Evolution</th>';
   const evoAcc={};
   rows.filter(r=>String(r.annee)===yr1||String(r.annee)===yr2).forEach(r=>{
     const f=r.fournisseur; if(!f) return;
@@ -1067,7 +1068,7 @@ function recomputeDepenses(rows) {
   renderAll();
 }
 
-// ─── RECALCUL DEPUIS table_alternatives.csv ──────────────────────────
+// ??? RECALCUL DEPUIS table_alternatives.csv ??????????????????????????
 function recomputeAlternatives(rows) {
   ALTERNATIVES.length=0;
   rows.forEach(r=>{
@@ -1083,7 +1084,7 @@ function recomputeAlternatives(rows) {
       prio: r.priorite||''
     });
   });
-  // Mise à jour KPIs alternatives
+  // Mise a jour KPIs alternatives
   const hautes = ALTERNATIVES.filter(r=>r.prio==='Haute').length;
   const maxEco = Math.max(...ALTERNATIVES.map(r=>r.eco),0);
   const maxItem = ALTERNATIVES.find(r=>r.eco===maxEco);
@@ -1091,24 +1092,24 @@ function recomputeAlternatives(rows) {
   document.getElementById('kpi-a-haute').textContent = hautes;
   document.getElementById('kpi-a-postes').textContent = ALTERNATIVES.length;
   document.getElementById('kpi-a-max').textContent = FMT(maxEco);
-  document.getElementById('kpi-a-maxsub').textContent = maxItem ? `${maxItem.f} → ${maxItem.alt.substring(0,25)}` : '';
+  document.getElementById('kpi-a-maxsub').textContent = maxItem ? `${maxItem.f} ? ${maxItem.alt.substring(0,25)}` : '';
   document.getElementById('kpi-a-est').textContent = FMT(Math.round(totalEco*0.32));
   renderAltTable();
   renderAltChart();
 }
 
-// ─── RECALCUL DEPUIS table_projection.csv ────────────────────────────
+// ??? RECALCUL DEPUIS table_projection.csv ????????????????????????????
 function recomputeProjections(rows) {
   PROJECTIONS.length=0;
   rows.forEach(r=>{
-    const isProj = r.type && r.type !== 'Réel' && r.type !== 'Reel' && r.type !== 'réel';
+    const isProj = r.type && r.type !== 'Reel' && r.type !== 'Reel' && r.type !== 'reel';
     const renta = r.CA>0 ? Math.round(r.resultat_net/r.CA*1000)/10 : 0;
     const label = isProj
       ? `${r.annee} (${(r.type||'').toLowerCase().includes('opt')?'opt.':'cons.'})`
       : String(r.annee);
     PROJECTIONS.push({label, CA:r.CA||0, res:r.resultat_net||0, alt:r.resultat_avec_alternatives||0, renta, type:isProj?'proj':'reel'});
   });
-  // Mise à jour KPIs projections
+  // Mise a jour KPIs projections
   const reels = PROJECTIONS.filter(r=>r.type==='reel');
   const last = reels[reels.length-1];
   const projs = PROJECTIONS.filter(r=>r.type==='proj');
@@ -1120,7 +1121,7 @@ function recomputeProjections(rows) {
   }
   if(projs.length){
     const min=Math.min(...projs.map(r=>r.CA)), max=Math.max(...projs.map(r=>r.CA));
-    document.getElementById('kpi-p-proj').textContent = min===max ? FMT(min) : `${Math.round(min/1000)}–${Math.round(max/1000)} K€`;
+    document.getElementById('kpi-p-proj').textContent = min===max ? FMT(min) : `${Math.round(min/1000)}?${Math.round(max/1000)} K?`;
   }
   renderProjections();
 }
@@ -1132,46 +1133,45 @@ function recomputeProjections(rows) {
 // PERSISTANCE LOCALE (localStorage)
 // =====================================================================
 const LS_KEY = 'activmedia_data_v1';
+var _lsAvailable = false;
+try { localStorage.setItem('_test','1'); localStorage.removeItem('_test'); _lsAvailable = true; } catch(e) { console.warn('localStorage non disponible (file:// ?)'); }
 
 function saveToStorage(rows) {
+  if(!_lsAvailable) return;
   try {
-    const payload = {
+    var payload = {
       ts: Date.now(),
-      rows: rows.map(r=>({
+      rows: rows.map(function(r){ return {
         fournisseur: r.fournisseur,
         date_document: r.date_document,
         montant_ttc: r.montant_ttc,
         categorie_depense: r.categorie_depense,
         annee: r.annee,
         est_depense: r.est_depense
-      }))
+      };})
     };
     localStorage.setItem(LS_KEY, JSON.stringify(payload));
-    console.log('Données sauvegardées localement:', rows.length, 'lignes');
-  } catch(e) {
-    console.warn('localStorage non disponible:', e);
-  }
+  } catch(e) { console.warn('saveToStorage erreur:', e); }
 }
 
 function loadFromStorage() {
+  if(!_lsAvailable) return null;
   try {
-    const raw = localStorage.getItem(LS_KEY);
+    var raw = localStorage.getItem(LS_KEY);
     if(!raw) return null;
-    const payload = JSON.parse(raw);
-    const age = Math.round((Date.now() - payload.ts) / 86400000);
-    return {rows: payload.rows, age};
-  } catch(e) {
-    console.warn('Erreur lecture localStorage:', e);
-    return null;
-  }
+    var payload = JSON.parse(raw);
+    var age = Math.round((Date.now() - payload.ts) / 86400000);
+    return {rows: payload.rows, age: age};
+  } catch(e) { console.warn('loadFromStorage erreur:', e); return null; }
 }
 
 function clearStorage() {
-  try { localStorage.removeItem(LS_KEY); } catch(e) {}
+  if(!_lsAvailable) return;
+  try { localStorage.removeItem(LS_KEY); localStorage.removeItem('activmedia_version'); } catch(e) {}
 }
 
 function triggerImportFromOverlay() {
-  // Crée un input temporaire pour l'import depuis l'overlay
+  // Cree un input temporaire pour l'import depuis l'overlay
   const input = document.getElementById('csvInput');
   input.onchange = function() {
     handleCSV(this);
@@ -1181,7 +1181,7 @@ function triggerImportFromOverlay() {
 }
 
 function resetData() {
-  if(!confirm('Effacer toutes les données importées et revenir à la démo ?')) return;
+  if(!confirm('Effacer toutes les donnees importees et revenir a la demo ?')) return;
   clearStorage();
   window._rawRows = null;
   ALTERNATIVES.length = 0;
@@ -1192,7 +1192,7 @@ function resetData() {
   KPI['2025'] = {total:38968, fourn:40, fac:108, moy:361};
   updateYearFilters();
   renderAll();
-  showStatus('✓ Données réinitialisées');
+  showStatus('OK Donnees reinitialisees');
 }
 
 function closeWelcome() {
@@ -1206,38 +1206,66 @@ function showWelcome() {
 }
 
 window.addEventListener('load', () => {
-  // Version check — vide le localStorage si données d'une ancienne version
-  const DASHBOARD_VERSION = 'v3';
-  const storedVersion = localStorage.getItem('activmedia_version');
-  if(storedVersion !== DASHBOARD_VERSION) {
-    clearStorage();
-    localStorage.setItem('activmedia_version', DASHBOARD_VERSION);
+  // Version check
+  var DASHBOARD_VERSION = 'v3';
+  try {
+    if(_lsAvailable) {
+      var storedVersion = localStorage.getItem('activmedia_version');
+      if(storedVersion !== DASHBOARD_VERSION) {
+        clearStorage();
+        localStorage.setItem('activmedia_version', DASHBOARD_VERSION);
+      }
+    }
+  } catch(e) { console.warn('Version check error:', e); }
+
+  // Attendre que Chart.js soit pret avant de rendre
+  var _dbgDiv = document.createElement('div');
+  _dbgDiv.id = 'debugMsg';
+  _dbgDiv.style = 'position:fixed;bottom:10px;left:10px;background:#ff6b00;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px;z-index:9999;max-width:400px;display:none';
+  document.body.appendChild(_dbgDiv);
+  function dbg(msg) {
+    _dbgDiv.style.display = 'block';
+    _dbgDiv.innerHTML = msg;
+    console.log('[DEBUG]', msg);
   }
 
-  // Attendre que Chart.js soit prêt avant de rendre
   function initDashboard() {
+    dbg('Initialisation...');
     if(typeof Chart === 'undefined') {
+      dbg('Chart.js pas encore charge, retry...');
       setTimeout(initDashboard, 100);
       return;
     }
+    dbg('Chart.js OK. Verification localStorage...');
     const saved = loadFromStorage();
     if(saved && saved.rows && saved.rows.length > 0) {
       try {
+        dbg('Restauration ' + saved.rows.length + ' lignes...');
         recomputeDepenses(saved.rows);
-        const msg = saved.age > 0 ? `Données du ${saved.age}j — ` : 'Données récentes — ';
-        showStatus(`✓ ${msg}${saved.rows.length} lignes restaurées`);
+        const msg = saved.age > 0 ? 'Donnees du ' + saved.age + 'j ? ' : 'Donnees recentes - ';
+        showStatus('OK ' + msg + saved.rows.length + ' lignes restaurees');
         document.getElementById('welcomeOverlay').style.display = 'none';
+        dbg('Restauration OK ?');
+        // debug reste visible
       } catch(e) {
-        console.warn('Erreur restauration localStorage:', e);
+        dbg('ERREUR localStorage: ' + e.message);
         clearStorage();
         renderAll();
         updateYearFilters();
         setTimeout(showWelcome, 300);
       }
     } else {
-      renderAll();
-      updateYearFilters();
-      setTimeout(showWelcome, 300);
+      dbg('Pas de donnees sauvegardees. Rendu demo...');
+      try {
+        renderAll();
+        dbg('renderAll OK');
+        updateYearFilters();
+        dbg('updateYearFilters OK');
+        setTimeout(showWelcome, 300);
+        // debug reste visible
+      } catch(e) {
+        dbg('ERREUR renderAll: ' + e.message);
+      }
     }
   }
   initDashboard();
