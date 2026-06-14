@@ -1227,30 +1227,22 @@ window.addEventListener('load', () => {
     const saved = loadFromStorage();
     if(saved && saved.rows && saved.rows.length > 0) {
       try {
-        console.log('Restauration ');
         recomputeDepenses(saved.rows);
-        const msg = saved.age > 0 ? 'Donnees du ' + saved.age + 'j ? ' : 'Donnees recentes - ';
-        showStatus('OK ' + msg + saved.rows.length + ' lignes restaurees');
-        document.getElementById('welcomeOverlay').style.display = 'none';
-        console.log('Restauration OK ?');
-        // debug reste visible
       } catch(e) {
-        console.log('ERREUR localStorage: ');
         clearStorage();
         renderAll();
         updateYearFilters();
-        setTimeout(showWelcome, 300);
       }
     } else {
-        try {
+      try {
         renderAll();
-            updateYearFilters();
-            setTimeout(showWelcome, 300);
-        // debug reste visible
+        updateYearFilters();
       } catch(e) {
         console.log('ERREUR renderAll: ');
       }
     }
+    // L'ecran d'accueil s'affiche systematiquement au chargement/actualisation
+    showWelcome();
   }
   initDashboard();
 });
