@@ -478,6 +478,13 @@ function updateKPIs(yr) {
   document.getElementById('kpi-fourn').textContent = FMT2(k.fourn);
   document.getElementById('kpi-fac').textContent = FMT2(k.fac);
   document.getElementById('kpi-moy').textContent = FMT(k.moy);
+  // Synchroniser les infobulles avec les memes valeurs
+  document.getElementById('tt-total').textContent = FMT(k.total);
+  document.getElementById('tt-fourn').textContent = FMT2(k.fourn);
+  document.getElementById('tt-fac').textContent = FMT2(k.fac);
+  document.getElementById('tt-moy').textContent = FMT(k.moy);
+  const ttTotalSub = document.querySelector('#tt-total').nextElementSibling;
+  if (ttTotalSub) ttTotalSub.textContent = `${FMT2(k.fac)} factures  -  ${FMT2(k.fourn)} fournisseurs`;
 }
 
 function renderDonut(yr) {
@@ -573,13 +580,19 @@ function renderFournKPIs(yr) {
   document.getElementById('kpi-f-fourn').textContent = FMT2(k.fourn);
   const mFourn = k.fourn > 0 ? Math.round(k.total / k.fourn) : 0;
   document.getElementById('kpi-f-moy').textContent = FMT(mFourn);
+  // Synchroniser les infobulles
+  document.getElementById('tt-f-total').textContent = FMT(k.total);
+  document.getElementById('tt-f-fourn').textContent = FMT2(k.fourn);
+  document.getElementById('tt-f-moy').textContent = FMT(mFourn);
   const yr2 = yr === 'all' ? null : yr;
   const allYrs = getAvailableYears();
   const top = FOURN_YEAR.map(r=>{
     const v = yr2 ? (r[yr2]||0) : allYrs.reduce((s,y)=>s+(r[y]||0),0);
     return {f:r.f, v};
   }).sort((a,b)=>b.v-a.v)[0];
-  document.getElementById('kpi-f-main').textContent = top && top.v > 0 ? top.f : 'N/A';
+  const topName = top && top.v > 0 ? top.f : 'N/A';
+  document.getElementById('kpi-f-main').textContent = topName;
+  document.getElementById('tt-f-main').textContent = topName;
 }
 
 function renderFournChart(yr) {
